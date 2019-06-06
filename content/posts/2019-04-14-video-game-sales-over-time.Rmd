@@ -1,0 +1,42 @@
+---
+title: Video game sales over time.
+author: jordan
+date: '2019-04-14'
+slug: video-game-sales-over-time
+categories: []
+tags: []
+toc: no
+images: ~
+---
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+library(tidyverse)
+
+```
+# 1. Loading the data
+I am starting off by loading the data from a Git repo. I did it this way so that it was possible to follow along if you would like. you can copy and paste the exact code below.
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+data <- read.csv("https://github.com/jordanarlan/rblogbyjordan/raw/master/Video_Games_Sales_as_at_22_Dec_2016.csv")
+```
+
+# 2. Exploritory analysis. 
+
+```{r}
+str(data)
+```
+
+I would like to know how the intrest in genres has changed over time.
+
+```{r}
+genre_year <- data %>% 
+  filter(Year_of_Release != c(2017, 2020, NA))%>%
+  group_by(Genre, Year_of_Release) %>%
+  summarise(Global_Sales_tot = sum(Global_Sales)) 
+
+  ggplot(genre_year, aes(x = Year_of_Release, y = Global_Sales_tot, color = Genre)) + 
+  geom_area(aes(group = Genre, fill = Genre), alpha = .6) +
+  theme(axis.text.x=element_text(angle=80, hjust=1)) + 
+  scale_x_discrete(name = "Date", 
+                   breaks = seq(from = 1980, to = 2015, by = 5), 
+                   labels = seq(from = 1980, to = 2015, by = 5)) 
+```

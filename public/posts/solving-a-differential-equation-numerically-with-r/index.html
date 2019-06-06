@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author"
+    content="Jordan ">
+<meta name="description"
+    content="Today I am going to code a function that solves an ordinary differential equation numerically. The system I will be looking at is a pendulum. The pendulum with have a length equal to l, and a position of the pendulum can be described is l* theta. Theta is the angle of the string away from the vertical axis.
+First I am going to add variables for physical constants
+m &amp;lt;- 3 #Mass g &amp;lt;- 9." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/solving-a-differential-equation-numerically-with-r/" />
+
+
+<title>
+    
+    Solving a differential equation numerically with R :: R blog by Jordan 
+    
+</title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+<link rel="stylesheet" href="/scss/main.min.099699ab246bf26f50616f7c9f00c79d46110459d1bd727b2d07d6fc09ece082.css">
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#252627">
+<link rel="shortcut icon" href="/favicon.ico">
+<meta name="theme-color" content="#252627">
+<meta itemprop="name" content="Solving a differential equation numerically with R">
+<meta itemprop="description" content="Today I am going to code a function that solves an ordinary differential equation numerically. The system I will be looking at is a pendulum. The pendulum with have a length equal to l, and a position of the pendulum can be described is l* theta. Theta is the angle of the string away from the vertical axis.
+First I am going to add variables for physical constants
+m &lt;- 3 #Mass g &lt;- 9.">
+
+
+<meta itemprop="datePublished" content="2019-04-06T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-04-06T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="745">
+
+
+
+<meta itemprop="keywords" content="physics," />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/"/>
+
+<meta name="twitter:title" content="Solving a differential equation numerically with R"/>
+<meta name="twitter:description" content="Today I am going to code a function that solves an ordinary differential equation numerically. The system I will be looking at is a pendulum. The pendulum with have a length equal to l, and a position of the pendulum can be described is l* theta. Theta is the angle of the string away from the vertical axis.
+First I am going to add variables for physical constants
+m &lt;- 3 #Mass g &lt;- 9."/>
+
+
+
+<meta property="article:section" content="physics" />
+
+<meta property="article:published_time" content="2019-04-06 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+    </head>
+
+    <body class="dark-theme">
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <span class="logo__mark">></span>
+            <span class="logo__text">Home.page$</span>
+            <span class="logo__cursor"></span>
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/about">About</a></li><li><a href="/posts">Posts</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+
+            <span class="theme-toggle"><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+  3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+  13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"/>
+</svg>
+</span>
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+    <main class="post">
+
+        <div class="post-info">
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>4 minutes
+
+            
+
+            </p>
+        </div>
+
+        <article>
+            <h1 class="post-title"><a href="/posts/solving-a-differential-equation-numerically-with-r/">Solving a differential equation numerically with R</a></h1>
+
+            
+
+            <div class="post-content">
+                
+
+
+<p>Today I am going to code a function that solves an ordinary differential equation numerically. The system I will be looking at is a pendulum. The pendulum with have a length equal to l, and a position of the pendulum can be described is l* theta. Theta is the angle of the string away from the vertical axis.</p>
+<p>First I am going to add variables for physical constants</p>
+<pre class="r"><code>m &lt;- 3 #Mass
+g &lt;- 9.82 #Gravitational constant 
+l &lt;- 2 #Length of the pendulum
+mu &lt;- .1 # Mu represents the loss of energy due to air resistance+</code></pre>
+<p>Next I’m going to create a function that takes arguments theta and theta_dot and returns theta_dubdot. m*g/l is also known as the torque (thanks Tyler) and multiplying the torque by sin(theta) shows the relationship between the angle and the speed. Lastly the terms -mu*theta_dot is showing the air resistance conditioned on the velocity.</p>
+<pre class="r"><code>theta_dubdot &lt;- function(theta, theta_dot){
+  return( -mu * theta_dot - (m*g/l) * sin(theta)) 
+}</code></pre>
+<p>Now to set the starting conditions of theta and theta_dot</p>
+<pre class="r"><code>theta0 &lt;- pi/3 #60 degrees 
+theta_dot0 &lt;- 0 #Zero angular velocity </code></pre>
+<p>Next I am going to code a solution to the equation that takes time as a input and returns theta. This function will approximate the theta at the end of the time t by taking a bunch of tiny steps equal to t/10.</p>
+<pre class="r"><code>find_theta &lt;- function(t.end) {
+  theta &lt;- theta0
+  theta_dot &lt;- theta_dot0
+  delta.t &lt;- .1
+  for (t in seq(from = 0, to = t.end, by = delta.t)){
+    theta &lt;- theta + theta_dot * delta.t
+    theta_dot &lt;- theta_dot + theta_dubdot(theta, theta_dot) * delta.t
+  }
+  return(theta)
+}
+
+find_theta(6)</code></pre>
+<pre><code>## [1] -0.7619322</code></pre>
+<p>Now I want to create a for loop that stores the values for theta between t= 1 and t = 15</p>
+<pre class="r"><code>results &lt;- data.frame(&quot;t&quot; = seq(0,15,.1), &quot;theta&quot; = seq(0,15,.1))
+index &lt;- 0
+for (i in seq(0,15,.1)) {
+  index &lt;- index + 1
+  results[index, ]$theta &lt;- find_theta(i)
+}</code></pre>
+<p>Lastly I am going to plot the pendulum position as theta*length over time.</p>
+<pre class="r"><code>ggplot(results, aes(t,theta*l)) + 
+  geom_line() + 
+  theme_dark() + 
+  xlab(&quot;time&quot;) + 
+  ylab(&quot;Theta * Length&quot;)</code></pre>
+<p><img src="/posts/2019-04-06-solving-a-differential-equation-numerically-with-r_files/figure-html/unnamed-chunk-7-1.png" width="576" /></p>
+<hr />
+<hr />
+<div id="now-to-visualize-how-changing-starting-positions-can-change-the-swing-of-the-pendulum" class="section level2">
+<h2>Now to visualize how changing starting positions can change the swing of the pendulum</h2>
+<p>After the interactive plot I will include the UI and Server code I used to make it. I used Shiny r. I hosted it for free on shinyapps.io and then embedded the app in to my blogdown rmd file.</p>
+<iframe width="850" height="700" scrolling="no" frameborder="no" src="https://jordan-a.shinyapps.io/pendulum/">
+</iframe>
+<pre><code># Load required packages --------------------------------------------------
+library(shiny)
+library(ggplot2)
+
+# Build ui.R --------------------------------------------------------------
+defaultTime &lt;- 1  ## Changed it to 1 for rapid debugging
+ui &lt;- fluidPage(# Application title
+  titlePanel(&quot;Physics engine pendulum.&quot;),
+  # Sidebar with a slider input for mass
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput(
+        &quot;mass&quot;,
+        &quot;Mass:&quot;,
+        min = 2,
+        max = 50,
+        value = 25
+      ),
+      sliderInput(
+        &quot;length&quot;,
+        &quot;Length:&quot;,
+        min = 3,
+        max = 50,
+        value = 3
+      ),
+      sliderInput(
+        &quot;theta0&quot;,
+        &quot;Starting Theta:&quot;,
+        min = 1,
+        max = 180,
+        value = 60
+      ),
+      sliderInput(
+        &quot;theta_dot0&quot;,
+        &quot;Starting Theta dot(Angular velocity):&quot;,
+        min = 0,
+        max = 5,
+        value = 0
+      ),
+      sliderInput(
+        &quot;time&quot;,
+        &quot;How long do you want to observe the pendulum:&quot;,
+        min = 1,
+        max = 30,
+        value = 15
+      )
+    ),
+    
+    # Show a plot of the generated distribution
+    mainPanel(plotOutput(&quot;linePlot&quot;))
+  ))
+
+# Build server.R ----------------------------------------------------------
+server &lt;- function(input, output) {
+  #constants 
+  g &lt;- 9.82 #Gravitational constant
+  mu &lt;- .1 # Mu represents the loss of energy due to air resistance+
+  
+  # reactive function that finds theta dub dot
+  theta_dubdot &lt;- reactive(function(theta, theta_dot) {
+    return(-mu * theta_dot - (input$mass * g / input$length) * sin(theta)) 
+  })
+  
+  # reactive function that finds theta 
+  find_theta &lt;- reactive(function(t.end) {
+    theta &lt;- input$theta0
+    theta_dot &lt;- input$theta_dot0
+    delta.t &lt;- .1
+    for (t in seq(from = 0, to = t.end, by = delta.t)) {
+      theta &lt;- theta + theta_dot * delta.t
+      theta_dot &lt;- theta_dot + theta_dubdot()(theta, theta_dot) * delta.t 
+    }
+    return(theta)
+  })
+  
+  ### rv$result uses input$time so it needs to be reactive() not reactiveValues()
+  rvResult &lt;- reactive({
+    req(input$time)
+    outputDF &lt;- data.frame(&quot;t&quot; = seq(0, input$time , .1),
+                           &quot;theta&quot; = seq(0, input$time , .1))
+    index &lt;- 0
+    for (i in seq(0, input$time, .1)) {
+      index &lt;- index + 1
+      computedTheta &lt;- find_theta()(i)
+      print(computedTheta)
+      outputDF$theta[index] &lt;- computedTheta 
+    }
+    return(outputDF)
+  })
+  
+  output$linePlot &lt;- renderPlot({
+    print(rvResult())
+    # draw the plot with the specified parameters
+    ggplot(rvResult(), aes(t, theta * input$length)) +
+      geom_line() +
+      theme_dark() +
+      xlab(&quot;Time&quot;) +
+      ylab(&quot;Position&quot;) +
+      labs(title = &quot;Ploting the position of the weight over time&quot;)# creating the plot
+  })
+}
+
+# Launch the Shiny app ----------------------------------------------------
+shinyApp(ui = ui, server = server, options = list(launch.browser = TRUE))</code></pre>
+</div>
+
+            </div>
+        </article>
+
+        <hr />
+
+        <div class="post-info">
+                <p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="/tags/physics">physics</a></span>
+                </p>
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>745 Words</p>
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2019-04-05 19:00 -0500</p>
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Read other posts</span>
+                    <hr />
+                </div>
+
+                <div class="pagination__buttons">
+                    
+                        <span class="button previous">
+                            <a href="/posts/video-game-sales-over-time/">
+                                <span class="button__icon">←</span>
+                                <span class="button__text">Video game sales over time.</span>
+                            </a>
+                        </span>
+                    
+
+                    
+                        <span class="button next">
+                            <a href="/posts/supervised-machine-learning-used-to-classify-plants/">
+                                <span class="button__text">Supervised machine learning used to classify plants</span>
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    
+                </div>
+            </div>
+        
+
+        
+    </main>
+
+            </div>
+
+            
+                <footer class="footer">
+
+</footer>
+            
+        </div>
+
+        
+
+
+
+
+
+<script type="text/javascript" src="/js/bundle.min.cf7871ed49474a80ed457154d24e61f7881adbe0f9384951a74ac46b688a39a4dbfa68bc6d37baeb058186de354ead3487d4ee7f083ea4cba860c48600b694f3.js" integrity="sha512-z3hx7UlHSoDtRXFU0k5h94ga2&#43;D5OElRp0rEa2iKOaTb&#43;mi8bTe66wWBht41Tq00h9Tufwg&#43;pMuoYMSGALaU8w=="></script>
+
+
+
+    </body>
+</html>

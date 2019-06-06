@@ -1,0 +1,201 @@
+---
+title: Solving a differential equation numerically with R
+author: 'Jordan '
+date: '2019-04-06'
+slug: solving-a-differential-equation-numerically-with-r
+categories:
+  - physics 
+tags:
+  - physics 
+toc: no
+images: ~
+---
+
+Today I am going to code a function that solves an ordinary differential equation numerically. The system I will be looking at is a pendulum. The pendulum with have a length equal to l, and a position of the pendulum can be described is l* theta. Theta is the angle of the string away from the vertical axis.
+
+First I am going to add variables for physical constants 
+```{r}
+m <- 3 #Mass
+g <- 9.82 #Gravitational constant 
+l <- 2 #Length of the pendulum
+mu <- .1 # Mu represents the loss of energy due to air resistance+
+```
+
+Next I'm going to create a function that takes arguments theta and theta_dot and returns theta_dubdot. m\*g/l is also known as the torque (thanks Tyler) and multiplying the torque by sin(theta) shows the relationship between the angle and the speed. Lastly the terms -mu\*theta_dot is showing the air resistance conditioned on the velocity. 
+```{r}
+theta_dubdot <- function(theta, theta_dot){
+  return( -mu * theta_dot - (m*g/l) * sin(theta)) 
+}
+
+```
+
+Now to set the starting conditions of theta and theta_dot
+
+```{r}
+theta0 <- pi/3 #60 degrees 
+theta_dot0 <- 0 #Zero angular velocity 
+```
+
+Next I am going to code a solution to the equation that takes time as a input and returns theta. This function will approximate the theta at the end of the time t by taking a bunch of tiny steps equal to t/10.
+```{r}
+find_theta <- function(t.end) {
+  theta <- theta0
+  theta_dot <- theta_dot0
+  delta.t <- .1
+  for (t in seq(from = 0, to = t.end, by = delta.t)){
+    theta <- theta + theta_dot * delta.t
+    theta_dot <- theta_dot + theta_dubdot(theta, theta_dot) * delta.t
+  }
+  return(theta)
+}
+
+find_theta(6)
+```
+
+Now I want to create a for loop that stores the values for theta between t= 1 and t = 15
+
+```{r}
+results <- data.frame("t" = seq(0,15,.1), "theta" = seq(0,15,.1))
+index <- 0
+for (i in seq(0,15,.1)) {
+  index <- index + 1
+  results[index, ]$theta <- find_theta(i)
+}
+
+```
+
+```{r include=FALSE}
+library(ggplot2)
+```
+
+
+Lastly I am going to plot the pendulum position as theta*length over time. 
+
+```{r fig.height=4.5, fig.width=6}
+ggplot(results, aes(t,theta*l)) + 
+  geom_line() + 
+  theme_dark() + 
+  xlab("time") + 
+  ylab("Theta * Length")
+ 
+```
+
+***
+
+
+
+***
+
+## Now to visualize how changing starting positions can change the swing of the pendulum
+
+After the interactive plot I will include the UI and Server code I used to make it. I used Shiny r. I hosted it for free on shinyapps.io and then embedded the app in to my blogdown rmd file.
+
+<iframe width="850" height="700" scrolling="no" frameborder="no"  src="https://jordan-a.shinyapps.io/pendulum/"> </iframe>
+
+
+```
+# Load required packages --------------------------------------------------
+library(shiny)
+library(ggplot2)
+
+# Build ui.R --------------------------------------------------------------
+defaultTime <- 1  ## Changed it to 1 for rapid debugging
+ui <- fluidPage(# Application title
+  titlePanel("Physics engine pendulum."),
+  # Sidebar with a slider input for mass
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput(
+        "mass",
+        "Mass:",
+        min = 2,
+        max = 50,
+        value = 25
+      ),
+      sliderInput(
+        "length",
+        "Length:",
+        min = 3,
+        max = 50,
+        value = 3
+      ),
+      sliderInput(
+        "theta0",
+        "Starting Theta:",
+        min = 1,
+        max = 180,
+        value = 60
+      ),
+      sliderInput(
+        "theta_dot0",
+        "Starting Theta dot(Angular velocity):",
+        min = 0,
+        max = 5,
+        value = 0
+      ),
+      sliderInput(
+        "time",
+        "How long do you want to observe the pendulum:",
+        min = 1,
+        max = 30,
+        value = 15
+      )
+    ),
+    
+    # Show a plot of the generated distribution
+    mainPanel(plotOutput("linePlot"))
+  ))
+
+# Build server.R ----------------------------------------------------------
+server <- function(input, output) {
+  #constants 
+  g <- 9.82 #Gravitational constant
+  mu <- .1 # Mu represents the loss of energy due to air resistance+
+  
+  # reactive function that finds theta dub dot
+  theta_dubdot <- reactive(function(theta, theta_dot) {
+    return(-mu * theta_dot - (input$mass * g / input$length) * sin(theta)) 
+  })
+  
+  # reactive function that finds theta 
+  find_theta <- reactive(function(t.end) {
+    theta <- input$theta0
+    theta_dot <- input$theta_dot0
+    delta.t <- .1
+    for (t in seq(from = 0, to = t.end, by = delta.t)) {
+      theta <- theta + theta_dot * delta.t
+      theta_dot <- theta_dot + theta_dubdot()(theta, theta_dot) * delta.t 
+    }
+    return(theta)
+  })
+  
+  ### rv$result uses input$time so it needs to be reactive() not reactiveValues()
+  rvResult <- reactive({
+    req(input$time)
+    outputDF <- data.frame("t" = seq(0, input$time , .1),
+                           "theta" = seq(0, input$time , .1))
+    index <- 0
+    for (i in seq(0, input$time, .1)) {
+      index <- index + 1
+      computedTheta <- find_theta()(i)
+      print(computedTheta)
+      outputDF$theta[index] <- computedTheta 
+    }
+    return(outputDF)
+  })
+  
+  output$linePlot <- renderPlot({
+    print(rvResult())
+    # draw the plot with the specified parameters
+    ggplot(rvResult(), aes(t, theta * input$length)) +
+      geom_line() +
+      theme_dark() +
+      xlab("Time") +
+      ylab("Position") +
+      labs(title = "Ploting the position of the weight over time")# creating the plot
+  })
+}
+
+# Launch the Shiny app ----------------------------------------------------
+shinyApp(ui = ui, server = server, options = list(launch.browser = TRUE))
+```

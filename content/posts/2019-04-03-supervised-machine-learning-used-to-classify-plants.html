@@ -1,0 +1,155 @@
+---
+title: Supervised machine learning used to classify plants
+author: Jordan Arlan
+date: '2019-04-03'
+slug: supervised-machine-learning-used-to-classify-plants
+categories:
+  - Machine learning
+tags:
+  - Machine learning
+images: ~
+---
+
+
+
+<p>Today we are going to look at supervised learning in R using the packages ‘class’, ‘tidyverse’, and ‘caret’. The goal of this model is to classify plants in to a certain species based off of the dimensions of the petals and sepals.</p>
+<div id="cleaning-the-data" class="section level2">
+<h2>1. Cleaning the data</h2>
+<p>The first things I need to do in order to create a model is clean the data. This can include many different steps depending on how much needs to be done. Luckily for this data set only a minimal amount is needed.</p>
+<pre class="r"><code>str(iris)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    150 obs. of  5 variables:
+##  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+##  $ Species     : Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<pre class="r"><code>iris.ml &lt;- iris %&gt;% mutate(Sepal.tot = Sepal.Length*Sepal.Width, 
+                           Petal.tot = Petal.Length*Petal.Width)
+
+##Now I will normalize the data using the scale() function.  
+iris.ml[-5] &lt;- scale(iris.ml[-5])
+
+## I am checking to see that the data is now normalized 
+## (mean == 0 &amp; sd == 1)
+table(&quot;mean&quot; = colMeans(iris.ml[-5]),&quot;sd&quot; =  apply(iris.ml[-5],2,sd))</code></pre>
+<pre><code>##                        sd
+## mean                    1
+##   -4.48067509021636e-16 1
+##   -3.714621203225e-17   1
+##   -2.84494650060196e-17 1
+##   1.13335267097151e-18  1
+##   1.13173359572727e-16  1
+##   2.03540887847945e-16  1</code></pre>
+</div>
+<div id="exploratory-data-analysis" class="section level2">
+<h2>2. Exploratory data analysis</h2>
+<p>First I am going to start with some EDA (exploratory data analysis). I’m going to create a scatterplot.</p>
+<pre class="r"><code>ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) + geom_point() </code></pre>
+<p><img src="/posts/2019-04-03-supervised-machine-learning-used-to-classify-plants_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(iris, aes(Petal.Length, Petal.Width, color = Species)) + geom_point()</code></pre>
+<p><img src="/posts/2019-04-03-supervised-machine-learning-used-to-classify-plants_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<pre class="r"><code>ggplot(iris.ml, aes(Petal.tot, Sepal.tot, color = Species)) + geom_point()</code></pre>
+<p><img src="/posts/2019-04-03-supervised-machine-learning-used-to-classify-plants_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
+<p>The plots show defined clusters. The second plot looking at petal dimensions has extremely well defined clusters. This indicates that the variables being plotted are good indicators at what species a plant is.</p>
+</div>
+<div id="preparing-the-data-for-modeling" class="section level2">
+<h2>3. Preparing the data for modeling</h2>
+<p>Now I will make a test and training subset of the data.</p>
+<pre class="r"><code>#Checking the proportions of each factor level
+prop.table(table(iris$Species))</code></pre>
+<pre><code>## 
+##     setosa versicolor  virginica 
+##       0.33       0.33       0.33</code></pre>
+<pre class="r"><code>#Now to create a variable called test that indicates if the data point is in the training or test set
+set.seed(12345)
+test &lt;- createDataPartition(iris$Species, p = 0.333, list = FALSE)
+
+# Checking to see that the two data sets are similar in distribution. 
+summary(iris[test, ])</code></pre>
+<pre><code>##   Sepal.Length  Sepal.Width   Petal.Length  Petal.Width         Species  
+##  Min.   :4.3   Min.   :2.2   Min.   :1.1   Min.   :0.10   setosa    :17  
+##  1st Qu.:5.1   1st Qu.:2.8   1st Qu.:1.6   1st Qu.:0.35   versicolor:17  
+##  Median :5.8   Median :3.0   Median :4.5   Median :1.30   virginica :17  
+##  Mean   :5.8   Mean   :3.1   Mean   :3.7   Mean   :1.21                  
+##  3rd Qu.:6.3   3rd Qu.:3.4   3rd Qu.:5.1   3rd Qu.:1.85                  
+##  Max.   :7.9   Max.   :4.0   Max.   :6.9   Max.   :2.40</code></pre>
+<pre class="r"><code>summary(iris[-test, ])</code></pre>
+<pre><code>##   Sepal.Length  Sepal.Width   Petal.Length  Petal.Width        Species  
+##  Min.   :4.4   Min.   :2.0   Min.   :1.0   Min.   :0.1   setosa    :33  
+##  1st Qu.:5.1   1st Qu.:2.8   1st Qu.:1.6   1st Qu.:0.3   versicolor:33  
+##  Median :5.8   Median :3.0   Median :4.3   Median :1.3   virginica :33  
+##  Mean   :5.8   Mean   :3.1   Mean   :3.8   Mean   :1.2                  
+##  3rd Qu.:6.4   3rd Qu.:3.3   3rd Qu.:5.2   3rd Qu.:1.8                  
+##  Max.   :7.7   Max.   :4.4   Max.   :6.7   Max.   :2.5</code></pre>
+<pre class="r"><code># I am going to create a vector containing all the labels of species
+iris.ml.test &lt;- iris.ml[test, ]
+iris.ml.train &lt;- iris.ml[-test, ]
+species.train.label &lt;- iris.ml.train$Species</code></pre>
+</div>
+<div id="supervised-machine-learning-classification-with-k-nearest-neighbors" class="section level2">
+<h2>4. Supervised machine learning: classification with K nearest neighbors</h2>
+<p>The machine learning method I am going to use is k nearest neighbors. This algorithm maps the variables of interest to a feature space and compares the data to its k nearest neighbors in order to minimize the Euclidian distance within clusters given the parameters set .I’m using the package ‘class’ and the function knn().</p>
+<pre class="r"><code>#I will start off by setting k = 1 this number is related on how many neighbors are included in the classification calculation. 
+iris.pred.knn &lt;- knn(iris.ml.train[-5], iris.ml.test[-5], 
+                     cl = species.train.label, k = 1 )
+
+#In order to see how well this model performed I am going to make a table. 
+species.test.label &lt;- iris.ml.test$Species
+
+table(iris.pred.knn, species.test.label)</code></pre>
+<pre><code>##              species.test.label
+## iris.pred.knn setosa versicolor virginica
+##    setosa         17          0         0
+##    versicolor      0         14         4
+##    virginica       0          3        13</code></pre>
+<div id="picking-k" class="section level3">
+<h3>4.1 Picking k</h3>
+<p>In order to find the right k we need to decide how we will be comparing them. I think a measure of accuracy via comparing predictions to actual labels will work well.</p>
+<pre class="r"><code>set.seed(12345)
+results &lt;- map_dbl(1:10, function(k){
+  model &lt;- knn(iris.ml.train[-5], iris.ml.test[-5], 
+                     cl = species.train.label, k = k)
+  
+  mean(model == species.test.label)})
+
+result_df &lt;- data.frame(
+  k = 1:10,
+  results = results
+)
+
+result_df %&gt;% 
+  ggplot(aes(x = k, y = results))+ 
+  geom_line() +
+  scale_x_continuous(breaks = 1:10)</code></pre>
+<p><img src="/posts/2019-04-03-supervised-machine-learning-used-to-classify-plants_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Picking k is up to the one making the model but in theory you want the lowest K with out giving up too much accuracy. I am going to go with 5 however 7 could be a good choice too.</p>
+<pre class="r"><code>#I will now set k = 5
+iris.pred.knn.5 &lt;- knn(iris.ml.train[-5], iris.ml.test[-5], 
+                     cl = species.train.label, k = 5 )
+
+#In order to see how well this model performed I am going to make a table. 
+species.test.label &lt;- iris.ml.test$Species
+
+table(iris.pred.knn.5, species.test.label)</code></pre>
+<pre><code>##                species.test.label
+## iris.pred.knn.5 setosa versicolor virginica
+##      setosa         17          0         0
+##      versicolor      0         16         1
+##      virginica       0          1        16</code></pre>
+<pre class="r"><code>mean(iris.pred.knn.5 == species.test.label)</code></pre>
+<pre><code>## [1] 0.96</code></pre>
+</div>
+</div>
+<div id="results" class="section level2">
+<h2>5. Results</h2>
+<p>So we have now achieved a classification accuracy of 96.08% that of course is extremely good. However, I would be worried about potential over fitting of the data given that we don’t have a very large data set.</p>
+<p>In order to get better insight in to the confidence of each classification prediction we can set the prob = TRUE.</p>
+<pre class="r"><code>iris.pred.knn.5 &lt;- knn(iris.ml.train[-5], iris.ml.test[-5], cl = species.train.label, k = 5 , prob = TRUE)
+
+#Now to extract the &quot;prob&quot; attribute from the knn object
+iris.prob.knn &lt;- attr(iris.pred.knn.5, &quot;prob&quot;)
+
+mean(iris.prob.knn)</code></pre>
+<pre><code>## [1] 0.93</code></pre>
+<p>So on average the model is 92.55% sure about its classification choices.</p>
+</div>

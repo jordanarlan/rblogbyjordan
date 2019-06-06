@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Machine Learning on R blog by Jordan</title>
+    <link>/tags/machine-learning/</link>
+    <description>Recent content in Machine Learning on R blog by Jordan</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 16 May 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/machine-learning/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Exploritory Data Analysis in the FIFA database</title>
+      <link>/posts/exploritory-data-analysis-in-the-fifa-database/</link>
+      <pubDate>Thu, 16 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/exploritory-data-analysis-in-the-fifa-database/</guid>
+      <description>Introduction From Wikipedia:
+FIFA 19 is a football simulation video game developed by EA Vancouver as part of Electronic Arts’ FIFA series. Announced on 6 June 2018 for its E3 2018 press conference, it was released on 28 September 2018 for PlayStation 3, PlayStation 4, Xbox 360, Xbox One, Nintendo Switch, and Microsoft Windows. It is the 26th installment in the FIFA series. As with FIFA 18, Cristiano Ronaldo appears as the cover athlete of the regular edition.</description>
+    </item>
+    
+    <item>
+      <title>Supervised machine learning used to classify plants</title>
+      <link>/posts/supervised-machine-learning-used-to-classify-plants/</link>
+      <pubDate>Wed, 03 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/supervised-machine-learning-used-to-classify-plants/</guid>
+      <description>Today we are going to look at supervised learning in R using the packages ‘class’, ‘tidyverse’, and ‘caret’. The goal of this model is to classify plants in to a certain species based off of the dimensions of the petals and sepals.
+1. Cleaning the data The first things I need to do in order to create a model is clean the data. This can include many different steps depending on how much needs to be done.</description>
+    </item>
+    
+  </channel>
+</rss>

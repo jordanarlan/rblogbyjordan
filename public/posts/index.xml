@@ -1,0 +1,824 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Posts on R blog by Jordan</title>
+        <link>/posts/</link>
+        <description>Recent content in Posts on R blog by Jordan</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Fri, 24 May 2019 00:00:00 +0000</lastBuildDate>
+        <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Logistic regression used to predict heart disease</title>
+            <link>/posts/logistic-regression-used-to-predict-heart-disease/</link>
+            <pubDate>Fri, 24 May 2019 00:00:00 +0000</pubDate>
+            
+            <guid>/posts/logistic-regression-used-to-predict-heart-disease/</guid>
+            <description>1. Heart disease and potential risk factors  Millions of people are getting some sort of heart disease every year and heart disease is the biggest killer of both men and women in the United States and around the world. Statistical analysis has identified many risk factors associated with heart disease such as age, blood pressure, total cholesterol, diabetes, hypertension, family history of heart disease, obesity, lack of physical exercise, etc.</description>
+            <content type="html"><![CDATA[
+
+
+<div id="heart-disease-and-potential-risk-factors" class="section level2">
+<h2>1. Heart disease and potential risk factors</h2>
+<p>
+Millions of people are getting some sort of heart disease every year and heart disease is the biggest killer of both men and women in the United States and around the world. Statistical analysis has identified many risk factors associated with heart disease such as age, blood pressure, total cholesterol, diabetes, hypertension, family history of heart disease, obesity, lack of physical exercise, etc. In this notebook, we’re going to run statistical testing and regression models using the Cleveland heart disease dataset to assess one particular factor – maximum heart rate one can achieve during exercise and how it is associated with a higher likelihood of getting heart disease.
+</p>
+<p>
+<img src="https://s3.amazonaws.com/assets.datacamp.com/production/project_445/img/run31.png" height="300" width="1000">
+</p>
+<pre class="r"><code> library(readr)
+# Read datasets Cleveland_hd.csv into hd_data
+hd_data &lt;- read_csv(&quot;input/Cleveland_hd.csv&quot;)
+
+# Take a look at the first 5 rows of hd_data
+head(hd_data, 5)</code></pre>
+<pre><code>## # A tibble: 5 x 14
+##     age   sex    cp trestbps  chol   fbs restecg thalach exang oldpeak
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;int&gt;   &lt;dbl&gt;
+## 1    63     1     1      145   233     1       2     150     0     2.3
+## 2    67     1     4      160   286     0       2     108     1     1.5
+## 3    67     1     4      120   229     0       2     129     1     2.6
+## 4    37     1     3      130   250     0       0     187     0     3.5
+## 5    41     0     2      130   204     0       2     172     0     1.4
+## # ... with 4 more variables: slope &lt;int&gt;, ca &lt;int&gt;, thal &lt;int&gt;,
+## #   class &lt;int&gt;</code></pre>
+</div>
+<div id="converting-diagnosis-class-into-outcome-variable" class="section level2">
+<h2>2. Converting diagnosis class into outcome variable</h2>
+<p>
+We noticed that the outcome variable <code>class</code> has more than two levels. According to the codebook, any non-zero values can be coded as an “event.” Let’s create a new variable called <code>hd</code> to represent a binary 1/0 outcome.
+</p>
+<p>
+There are a few other categorical/discrete variables in the dataset. Let’s also convert sex into ‘factor’ type for next step analysis. Otherwise, R will treat them as continuous by default.
+</p>
+<p>
+The full data dictionary is also displayed here.
+</p>
+<p>
+<img src="https://s3.amazonaws.com/assets.datacamp.com/production/project_445/img/datadict.png" height="500" width="750">
+</p>
+</div>
+<div id="section" class="section level2">
+<h2></h2>
+<pre class="r"><code># Load the tidyverse package
+library(tidyverse)
+
+# Use the &#39;mutate&#39; function from dplyr to recode our data
+hd_data %&gt;% mutate(hd = ifelse(class &gt; 0, 1, 0))-&gt; hd_data
+
+# Recode sex using mutate function and save as hd_data
+hd_data %&gt;% mutate(sex = factor(hd_data$sex, levels = 0:1, labels = c(&quot;Female&quot;, &quot;Male&quot;)))-&gt; hd_data</code></pre>
+</div>
+<div id="identifying-important-clinical-variables" class="section level2">
+<h2>3. Identifying important clinical variables</h2>
+<p>
+Now, let’s use statistical tests to see which ones are related to heart disease. We can explore the associations for each variable in the dataset. Depending on the type of the data (i.e., continuous or categorical), we use t-test or chi-squared test to calculate the p-values.
+</p>
+<p>
+Recall, t-test is used to determine whether there is a significant difference between the means of two groups (e.g., is the mean age from group A different from the mean age from group B?). A chi-squared test for independence compares two variables in a contingency table to see if they are related. In a more general sense, it tests to see whether distributions of categorical variables differ from each another.
+</p>
+<pre class="r"><code># Does sex have an effect? Sex is a binary variable in this dataset,
+# so the appropriate test is chi-squared test
+hd_sex &lt;- chisq.test(hd_data$sex, hd_data$hd)
+
+# Does age have an effect? Age is continuous, so we use a t-test
+hd_age &lt;- t.test(hd_data$age ~ hd_data$hd)
+
+# What about thalach? Thalach is continuous, so we use a t-test
+hd_heartrate &lt;- t.test(hd_data$thalach ~ hd_data$hd)
+
+# Print the results to see if p&lt;0.05.
+print(hd_sex)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test with Yates&#39; continuity correction
+## 
+## data:  hd_data$sex and hd_data$hd
+## X-squared = 22.043, df = 1, p-value = 2.667e-06</code></pre>
+<pre class="r"><code>print(hd_age)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  hd_data$age by hd_data$hd
+## t = -4.0303, df = 300.93, p-value = 7.061e-05
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -6.013385 -2.067682
+## sample estimates:
+## mean in group 0 mean in group 1 
+##        52.58537        56.62590</code></pre>
+<pre class="r"><code>print(hd_heartrate)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  hd_data$thalach by hd_data$hd
+## t = 7.8579, df = 272.27, p-value = 9.106e-14
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  14.32900 23.90912
+## sample estimates:
+## mean in group 0 mean in group 1 
+##         158.378         139.259</code></pre>
+</div>
+<div id="explore-the-associations-graphically-i" class="section level2">
+<h2>4. Explore the associations graphically (i)</h2>
+<p>
+A good picture is worth a thousand words. In addition to p-values from statistical tests, we can plot the age, sex, and maximum heart rate distributions with respect to our outcome variable. This will give us a sense of both the direction and magnitude of the relationship.
+</p>
+<p>
+First, let’s plot age using a boxplot since it is a continuous variable.
+</p>
+<pre class="r"><code># Recode hd to be labelled
+hd_data%&gt;% mutate(hd_labelled = ifelse(hd == 0, &quot;No Disease&quot;, &quot;Disease&quot;)) -&gt; hd_data
+
+# age vs hd
+ggplot(data = hd_data, aes(x = hd_labelled ,y = age)) + geom_boxplot()</code></pre>
+<p><img src="/posts/2019-05-24-logistic-regression-used-to-predict-heart-disease_files/figure-html/unnamed-chunk-4-1.png" width="864" /></p>
+</div>
+<div id="explore-the-associations-graphically-ii" class="section level2">
+<h2>5. Explore the associations graphically (ii)</h2>
+<p>
+Next, let’s plot sex using a barplot since it is a binary variable in this dataset.
+</p>
+<pre class="r"><code># sex vs hd
+ggplot(data = hd_data,aes( x = hd_labelled, fill = sex)) + geom_bar(position=&quot;fill&quot;) + ylab(&quot;Sex %&quot;)</code></pre>
+<p><img src="/posts/2019-05-24-logistic-regression-used-to-predict-heart-disease_files/figure-html/unnamed-chunk-5-1.png" width="864" /></p>
+</div>
+<div id="explore-the-associations-graphically-iii" class="section level2">
+<h2>6. Explore the associations graphically (iii)</h2>
+<p>
+And finally, let’s plot thalach using a boxplot since it is a continuous variable.
+</p>
+<pre class="r"><code># max heart rate vs hd
+ggplot(data = hd_data,aes(x = hd_labelled, y = thalach)) + geom_boxplot()</code></pre>
+<p><img src="/posts/2019-05-24-logistic-regression-used-to-predict-heart-disease_files/figure-html/unnamed-chunk-6-1.png" width="864" /></p>
+</div>
+<div id="putting-all-three-variables-in-one-model" class="section level2">
+<h2>7. Putting all three variables in one model</h2>
+<p>
+The plots and the statistical tests both confirmed that all the three variables are highly significantly associated with our outcome (p&lt;0.001 for all tests).
+</p>
+<p>
+In general, we want to use multiple logistic regression when we have one binary and two or more predicting variables. The binary variable is the dependent (Y) variable; we are studying the effect that the independent (X) variables have on the probability of obtaining a particular value of the dependent variable. For example, we might want to know the effect that maximum heart rate, age, and sex have on the probability that a person will have a heart disease in the next year. The model will also tell us what the remaining effect of maximum heart rate is after we control or adjust for the effects from the other two effectors.
+</p>
+<p>
+The <code>glm()</code> command is designed to perform generalized linear models (regressions) on binary outcome data, count data, probability data, proportion data, and many other data types. In our case, the outcome is binary following a binomial distribution.
+</p>
+<pre class="r"><code># use glm function from base R and specify the family argument as binomial
+model &lt;- glm(data = hd_data, family = &#39;binomial&#39;, hd ~ age + sex + thalach)
+
+# extract the model summary
+summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = hd ~ age + sex + thalach, family = &quot;binomial&quot;, 
+##     data = hd_data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.2250  -0.8486  -0.4570   0.9043   2.1156  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  3.111610   1.607466   1.936   0.0529 .  
+## age          0.031886   0.016440   1.940   0.0524 .  
+## sexMale      1.491902   0.307193   4.857 1.19e-06 ***
+## thalach     -0.040541   0.007073  -5.732 9.93e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 417.98  on 302  degrees of freedom
+## Residual deviance: 332.85  on 299  degrees of freedom
+## AIC: 340.85
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+<div id="extracting-useful-information-from-the-model-output" class="section level2">
+<h2>8. Extracting useful information from the model output</h2>
+<p>
+It’s common practice in medical research to report Odds Ratio (OR) to quantify how strongly the presence or absence of property A is associated with the presence or absence of the outcome. When the OR is greater than 1, we say A is positively associated with outcome B (increases the Odds of having B). Otherwise, we say A is negatively associated with B (decreases the Odds of having B).
+</p>
+<p>
+The raw glm coefficient table in R represents the log(Odds Ratio) of the outcome. Therefore, we need to convert the values to the original OR scale and calculate the corresponding 95% Confidence Interval (CI) of the estimated Odds Ratio when reporting results from a logistic regression.
+</p>
+<pre class="r"><code># load the broom package
+library(broom)
+
+# tidy up the coefficient table
+tidy_m &lt;- tidy(model)
+tidy_m</code></pre>
+<pre><code>## # A tibble: 4 x 5
+##   term        estimate std.error statistic       p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;
+## 1 (Intercept)   3.11     1.61         1.94 0.0529       
+## 2 age           0.0319   0.0164       1.94 0.0524       
+## 3 sexMale       1.49     0.307        4.86 0.00000119   
+## 4 thalach      -0.0405   0.00707     -5.73 0.00000000993</code></pre>
+<pre class="r"><code># calculate OR
+tidy_m$OR &lt;- exp(tidy_m$estimate) 
+
+# calculate 95% CI and save as lower CI and upper CI
+tidy_m$lower_CI &lt;- exp(tidy_m$estimate - 1.96 * tidy_m$std.error)
+tidy_m$upper_CI &lt;- exp(tidy_m$estimate + 1.96 * tidy_m$std.error)
+
+# display the updated coefficient table
+tidy_m</code></pre>
+<pre><code>## # A tibble: 4 x 8
+##   term     estimate std.error statistic   p.value     OR lower_CI upper_CI
+##   &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Interc…   3.11     1.61         1.94   5.29e-2 22.5      0.962  524.   
+## 2 age        0.0319   0.0164       1.94   5.24e-2  1.03     1.000    1.07 
+## 3 sexMale    1.49     0.307        4.86   1.19e-6  4.45     2.43     8.12 
+## 4 thalach   -0.0405   0.00707     -5.73   9.93e-9  0.960    0.947    0.974</code></pre>
+</div>
+<div id="predicted-probabilities-from-our-model" class="section level2">
+<h2>9. Predicted probabilities from our model</h2>
+<p>
+So far, we have built a logistic regression model and examined the model coefficients/ORs. We may wonder how can we use this model we developed to predict a person’s likelihood of having heart disease given his/her age, sex, and maximum heart rate. Furthermore, we’d like to translate the predicted probability into a decision rule for clinical use by defining a cutoff value on the probability scale. In practice, when an individual comes in for a health check-up, the doctor would like to know the predicted probability of heart disease, for specific values of the predictors: a 45-year-old female with a max heart rate of 150. To do that, we create a data frame called newdata, in which we include the desired values for our prediction.
+</p>
+<pre class="r"><code># get the predicted probability in our dataset using the predict() function
+pred_prob &lt;- predict(model,hd_data, type = &quot;response&quot;)
+
+# create a decision rule using probability 0.5 as cutoff and save the predicted decision into the main data frame
+hd_data$pred_hd &lt;- ifelse(pred_prob &gt;= .5, 1, 0)
+
+# create a newdata data frame to save a new case information
+newdata &lt;- data.frame(age = 45, sex = &quot;Female&quot;, thalach = 150)
+
+# predict probability for this new case and print out the predicted value
+p_new &lt;- predict(model,newdata, type = &quot;response&quot;)
+p_new</code></pre>
+<pre><code>##         1 
+## 0.1773002</code></pre>
+</div>
+<div id="model-performance-metrics" class="section level2">
+<h2>10. Model performance metrics</h2>
+<p>
+Are the predictions accurate? How well does the model fit our data? We are going to use some common metrics to evaluate the model performance. The most straightforward one is Accuracy, which is the proportion of the total number of predictions that were correct. On the opposite, we can calculate the classification error rate using 1- accuracy. However, accuracy can be misleading when the response is rare (i.e., imbalanced response). Another popular metric, Area Under the ROC curve (AUC), has the advantage that it’s independent of the change in the proportion of responders. AUC ranges from 0 to 1. The closer it gets to 1 the better the model performance. Lastly, a confusion matrix is an N X N matrix, where N is the level of outcome. For the problem at hand, we have N=2, and hence we get a 2 X 2 matrix. It cross-tabulates the predicted outcome levels against the true outcome levels.
+</p>
+<p>
+After these metrics are calculated, we’ll see (from the logistic regression OR table) that older age, being male and having a lower max heart rate are all risk factors for heart disease. We can also apply our model to predict the probability of having heart disease. For a 45 years old female who has a max heart rate of 150, our model generated a heart disease probability of 0.177 indicating low risk of heart disease. Although our model has an overall accuracy of 0.71, there are cases that were misclassified as shown in the confusion matrix. One way to improve our current model is to include other relevant predictors from the dataset into our model, but that’s a task for another day!
+</p>
+<pre class="r"><code># load Metrics package
+library(Metrics)
+
+# calculate auc, accuracy, clasification error
+auc &lt;- auc(hd_data$hd, hd_data$pred_hd)
+accuracy &lt;- accuracy(hd_data$hd, hd_data$pred_hd)
+classification_error &lt;- ce(hd_data$hd, hd_data$pred_hd)
+
+# print out the metrics on to screen
+print(paste(&quot;AUC=&quot;, auc))</code></pre>
+<pre><code>## [1] &quot;AUC= 0.706483593612915&quot;</code></pre>
+<pre class="r"><code>print(paste(&quot;Accuracy=&quot;, accuracy))</code></pre>
+<pre><code>## [1] &quot;Accuracy= 0.70957095709571&quot;</code></pre>
+<pre class="r"><code>print(paste(&quot;Classification Error=&quot;, classification_error))</code></pre>
+<pre><code>## [1] &quot;Classification Error= 0.29042904290429&quot;</code></pre>
+<pre class="r"><code># confusion matrix
+table(hd_data$hd, hd_data$pred_hd, dnn=c( &#39;True Status&#39; ,&#39;Predicted Status&#39;)) # confusion matrix</code></pre>
+<pre><code>##            Predicted Status
+## True Status   0   1
+##           0 122  42
+##           1  46  93</code></pre>
+</div>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Exploritory Data Analysis in the FIFA database</title>
+            <link>/posts/exploritory-data-analysis-in-the-fifa-database/</link>
+            <pubDate>Thu, 16 May 2019 00:00:00 +0000</pubDate>
+            
+            <guid>/posts/exploritory-data-analysis-in-the-fifa-database/</guid>
+            <description>Introduction From Wikipedia:
+FIFA 19 is a football simulation video game developed by EA Vancouver as part of Electronic Arts’ FIFA series. Announced on 6 June 2018 for its E3 2018 press conference, it was released on 28 September 2018 for PlayStation 3, PlayStation 4, Xbox 360, Xbox One, Nintendo Switch, and Microsoft Windows. It is the 26th installment in the FIFA series. As with FIFA 18, Cristiano Ronaldo appears as the cover athlete of the regular edition.</description>
+            <content type="html"><![CDATA[
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>From Wikipedia:</p>
+<p><em>FIFA 19 is a football simulation video game developed by EA Vancouver as part of Electronic Arts’ FIFA series. Announced on 6 June 2018 for its E3 2018 press conference, it was released on 28 September 2018 for PlayStation 3, PlayStation 4, Xbox 360, Xbox One, Nintendo Switch, and Microsoft Windows. It is the 26th installment in the FIFA series. As with FIFA 18, Cristiano Ronaldo appears as the cover athlete of the regular edition.</em> <a href="https://en.wikipedia.org/wiki/FIFA_19" class="uri">https://en.wikipedia.org/wiki/FIFA_19</a></p>
+<p>The game features a number of different playing modes, however Career mode as a manager holds the most appeal for me.</p>
+<p>The following analysis will be tailored toward having the best chance at success in that mode for anyone interested.</p>
+<p><strong>Some things I want to analyse in this paper:</strong></p>
+<ul>
+<li>High level Exploratory Data Analysis</li>
+<li>Which features are highly correlated with a player’s overall rating by player position</li>
+<li>Analyse the differences between a player’s current rating and their potential rating</li>
+<li>Find out which teams have the highest potential</li>
+<li>Find out the youngest teams / oldest teams</li>
+<li>Use k-means clustering to try to find “bargains”; ie if there is someone with the same skills/potential, can they be found for a bargain?</li>
+</ul>
+</div>
+<div id="clean-and-prepare-data-for-analysis" class="section level2">
+<h2>Clean and prepare data for analysis</h2>
+<div id="feature-enginering" class="section level3">
+<h3>Feature enginering</h3>
+<ol style="list-style-type: decimal">
+<li><p><strong>Player Valuation</strong> - The raw data has player valuations as a character string, with a designation at the end specifying whether the value is thousands or millions. Regex is used to create a numeric variable called ValueNumeric_pounds</p></li>
+<li><p><strong>Player Wage</strong> - See Point 1 above. Same transformation has occurred for player Wage</p></li>
+<li><p><strong>Player Positions</strong> - There are 28 different positions in FIFA2019. To make analysis less granular, I have decided to create four groupings; GK, DEF, MID and FWD.</p></li>
+<li><p><strong>Player Age</strong> - I have decided to group players into age buckets, in 5 year increments other than for players 20 years and younger, and players 35 years and over.</p></li>
+<li><p><strong>Height</strong> - I am going to parse the Height data to numerical data in Inches.</p></li>
+<li><p><strong>Weight</strong> - I am going to do the same thing with weight as height.</p></li>
+</ol>
+<pre class="r"><code>#Parse the value data from a string to numerical
+fifa_data &lt;- fifa_data %&gt;%
+  mutate(ValueMultiplier = ifelse(str_detect(Value, &quot;K&quot;), 1000,
+                           ifelse(str_detect(Value, &quot;M&quot;), 1000000, 1))) %&gt;%
+  mutate(ValueNumeric_pounds = as.numeric(str_extract(Value, &quot;[[:digit:]]+\\.*[[:digit:]]*&quot;)) * ValueMultiplier) %&gt;%
+  mutate(Position = ifelse(is.na(Position), &quot;Unknown&quot;, Position))
+
+
+#Parse the wage data from a string to numerical
+fifa_data &lt;- fifa_data %&gt;%
+  mutate(WageMultiplier = ifelse(str_detect(Wage, &quot;K&quot;), 1000,
+                          ifelse(str_detect(Wage, &quot;M&quot;), 1000000, 1))) %&gt;%
+  mutate(WageNumeric_pounds = as.numeric(str_extract(Wage, &quot;[[:digit:]]+\\.*[[:digit:]]*&quot;)) * WageMultiplier)
+
+#show unique positions
+positions &lt;- unique(fifa_data$Position)
+
+
+gk &lt;- &quot;GK&quot;
+defs &lt;- positions[str_detect(positions, &quot;B$&quot;)]
+mids &lt;- positions[str_detect(positions, &quot;M$&quot;)]
+f1 &lt;- positions[str_detect(positions, &quot;F$&quot;)]
+f2 &lt;- positions[str_detect(positions, &quot;S$&quot;)]
+f3 &lt;- positions[str_detect(positions, &quot;T$&quot;)]
+f4 &lt;- positions[str_detect(positions, &quot;W$&quot;)]
+fwds &lt;- c(f1, f2, f3, f4)
+
+#binning the positions in to 4 catagories
+fifa_data &lt;- fifa_data %&gt;%
+  mutate(PositionGroup = ifelse(Position %in% gk, &quot;GK&quot;,
+                         ifelse(Position %in% defs,&quot;DEF&quot;,
+                         ifelse(Position %in% mids,&quot;MID&quot;,
+                         ifelse(Position %in% fwds, &quot;FWD&quot;, &quot;Unknown&quot;))
+  )))
+
+#binning the age data in to 5 catagories
+fifa_data &lt;- fifa_data %&gt;%
+  mutate(AgeGroup = ifelse(
+                      Age &lt;= 20,
+                      &quot;20 and under&quot;,
+                      ifelse(
+                        Age &gt; 20 &amp; Age &lt;= 25,
+                        &quot;21 to 25&quot;,
+                        ifelse(
+                          Age &gt; 25 &amp; Age &lt;= 30,
+                          &quot;25 to 30&quot;,
+                          ifelse(
+                            Age &gt; 30 &amp; Age &lt;= 35,
+                            &quot;31 to 35&quot;, &quot;Over 35&quot;)
+      )
+    )
+  ))
+#going form X&#39;X&#39;&#39; format to just a numaric inches
+fifa_data$Height &lt;- sapply(strsplit(as.character(fifa_data$Height),&quot;&#39;|\&quot;&quot;),
+                          function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
+
+#simply extracting thenumbers out of the string
+fifa_data$Weight &lt;- extract_numeric(fifa_data$Weight)</code></pre>
+<pre><code>## extract_numeric() is deprecated: please use readr::parse_number() instead</code></pre>
+<pre class="r"><code>fifa_data$AgeGroup &lt;- factor(fifa_data$AgeGroup)</code></pre>
+</div>
+</div>
+<div id="eda-exploritory-data-analysis" class="section level2">
+<h2>EDA (Exploritory Data Analysis)</h2>
+<pre class="r"><code>fifa_cor &lt;- fifa_data %&gt;%
+  select_if(is.numeric) %&gt;%
+  cor(use = &quot;complete.obs&quot;)
+
+
+  p.mat &lt;- fifa_data %&gt;%
+           select_if(is.numeric) %&gt;%
+           cor.mtest()
+
+  corrplot(
+  fifa_cor,
+  diag = FALSE,
+  order = &quot;AOE&quot;,
+  tl.pos = &quot;td&quot;,
+  tl.cex = 1,
+  method = &quot;color&quot;,
+  type = &quot;upper&quot;,
+  p.mat = p.mat$p,
+  sig.level = 0.01
+  )</code></pre>
+<p><img src="/posts/2019-05-16-looking-at-soccer-players-in-the-fifa-database_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
+<p>A couple of key take aways from the corrlation plot are that Potential, Overall, Reactions, and Composure are highly corralted. Also apparntly the better goalie you are the worse you tend to be at dribbling. Im also looking to see that the relationships folow my intuition so far i havent noticed any thing out of the ordinary</p>
+<div id="overall-ratings" class="section level3">
+<h3>Overall Ratings</h3>
+<p>Player ratings are normally distributed in FIFA19, with a mean of 66.2387 and standard deviation of 6.9089</p>
+<pre class="r"><code>ovr.age.mean &lt;- fifa_data %&gt;%
+                  group_by(AgeGroup) %&gt;%
+                  summarize(&#39;Mean Overall&#39; = round(mean(Overall, na.rm = T),2))
+
+fifa_data %&gt;%
+  ggplot(aes(x= Overall)) +
+  geom_density(aes(color = AgeGroup)) </code></pre>
+<p><img src="/posts/2019-05-16-looking-at-soccer-players-in-the-fifa-database_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+<pre class="r"><code>print(ovr.age.mean)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   AgeGroup     `Mean Overall`
+##   &lt;fct&gt;                 &lt;dbl&gt;
+## 1 20 and under           59.7
+## 2 21 to 25               66.0
+## 3 25 to 30               69.1
+## 4 31 to 35               69.5
+## 5 Over 35                68.0</code></pre>
+<pre class="r"><code>ggOver &lt;- ggplot(fifa_data, aes(y = Overall))
+
+ggOver + geom_smooth(aes(x = Age)) + geom_smooth(aes(x = Age, y = Potential, color = &quot;red&quot;))</code></pre>
+<p><img src="/posts/2019-05-16-looking-at-soccer-players-in-the-fifa-database_files/figure-html/unnamed-chunk-5-1.png" width="960" /> So I found this pretty informative. After about 32 players will decline in overall performance on average and untill about 28 players are expected to improve on average. also it appears after 40 players are expected to decrease in overall skill.</p>
+</div>
+<div id="looking-at-value-and-wage" class="section level3">
+<h3>Looking at Value and Wage</h3>
+</div>
+</div>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Video game sales over time.</title>
+            <link>/posts/video-game-sales-over-time/</link>
+            <pubDate>Sun, 14 Apr 2019 00:00:00 +0000</pubDate>
+            
+            <guid>/posts/video-game-sales-over-time/</guid>
+            <description>library(tidyverse) 1. Loading the data I am starting off by loading the data from a Git repo. I did it this way so that it was possible to follow along if you would like. you can copy and paste the exact code below.
+data &amp;lt;- read.csv(&amp;quot;https://github.com/jordanarlan/rblogbyjordan/raw/master/Video_Games_Sales_as_at_22_Dec_2016.csv&amp;quot;)  2. Exploritory analysis. str(data) ## &amp;#39;data.frame&amp;#39;: 16719 obs. of 16 variables: ## $ Name : Factor w/ 11563 levels &amp;quot;&amp;quot;,&amp;quot; Beyblade Burst&amp;quot;,..: 11059 9406 5572 11061 7411 9771 6693 11057 6696 2620 .</description>
+            <content type="html"><![CDATA[
+
+
+<pre class="r"><code>library(tidyverse)</code></pre>
+<div id="loading-the-data" class="section level1">
+<h1>1. Loading the data</h1>
+<p>I am starting off by loading the data from a Git repo. I did it this way so that it was possible to follow along if you would like. you can copy and paste the exact code below.</p>
+<pre class="r"><code>data &lt;- read.csv(&quot;https://github.com/jordanarlan/rblogbyjordan/raw/master/Video_Games_Sales_as_at_22_Dec_2016.csv&quot;)</code></pre>
+</div>
+<div id="exploritory-analysis." class="section level1">
+<h1>2. Exploritory analysis.</h1>
+<pre class="r"><code>str(data)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    16719 obs. of  16 variables:
+##  $ Name           : Factor w/ 11563 levels &quot;&quot;,&quot; Beyblade Burst&quot;,..: 11059 9406 5572 11061 7411 9771 6693 11057 6696 2620 ...
+##  $ Platform       : Factor w/ 31 levels &quot;2600&quot;,&quot;3DO&quot;,&quot;3DS&quot;,..: 26 12 26 26 6 6 5 26 26 12 ...
+##  $ Year_of_Release: Factor w/ 40 levels &quot;1980&quot;,&quot;1981&quot;,..: 27 6 29 30 17 10 27 27 30 5 ...
+##  $ Genre          : Factor w/ 13 levels &quot;&quot;,&quot;Action&quot;,&quot;Adventure&quot;,..: 12 6 8 12 9 7 6 5 6 10 ...
+##  $ Publisher      : Factor w/ 582 levels &quot;10TACLE Studios&quot;,..: 371 371 371 371 371 371 371 371 371 371 ...
+##  $ NA_Sales       : num  41.4 29.1 15.7 15.6 11.3 ...
+##  $ EU_Sales       : num  28.96 3.58 12.76 10.93 8.89 ...
+##  $ JP_Sales       : num  3.77 6.81 3.79 3.28 10.22 ...
+##  $ Other_Sales    : num  8.45 0.77 3.29 2.95 1 0.58 2.88 2.84 2.24 0.47 ...
+##  $ Global_Sales   : num  82.5 40.2 35.5 32.8 31.4 ...
+##  $ Critic_Score   : int  76 NA 82 80 NA NA 89 58 87 NA ...
+##  $ Critic_Count   : int  51 NA 73 73 NA NA 65 41 80 NA ...
+##  $ User_Score     : Factor w/ 97 levels &quot;&quot;,&quot;0&quot;,&quot;0.2&quot;,&quot;0.3&quot;,..: 79 1 82 79 1 1 84 65 83 1 ...
+##  $ User_Count     : int  322 NA 709 192 NA NA 431 129 594 NA ...
+##  $ Developer      : Factor w/ 1697 levels &quot;&quot;,&quot;10tacle Studios&quot;,..: 1035 1 1035 1035 1 1 1035 1035 1035 1 ...
+##  $ Rating         : Factor w/ 9 levels &quot;&quot;,&quot;AO&quot;,&quot;E&quot;,&quot;E10+&quot;,..: 3 1 3 3 1 1 3 3 3 1 ...</code></pre>
+<p>I would like to know how the intrest in genres has changed over time.</p>
+<pre class="r"><code>genre_year &lt;- data %&gt;% 
+  filter(Year_of_Release != c(2017, 2020, NA))%&gt;%
+  group_by(Genre, Year_of_Release) %&gt;%
+  summarise(Global_Sales_tot = sum(Global_Sales)) 
+
+  ggplot(genre_year, aes(x = Year_of_Release, y = Global_Sales_tot, color = Genre)) + 
+  geom_area(aes(group = Genre, fill = Genre), alpha = .6) +
+  theme(axis.text.x=element_text(angle=80, hjust=1)) + 
+  scale_x_discrete(name = &quot;Date&quot;, 
+                   breaks = seq(from = 1980, to = 2015, by = 5), 
+                   labels = seq(from = 1980, to = 2015, by = 5)) </code></pre>
+<p><img src="/posts/2019-04-14-video-game-sales-over-time_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Solving a differential equation numerically with R</title>
+            <link>/posts/solving-a-differential-equation-numerically-with-r/</link>
+            <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
+            
+            <guid>/posts/solving-a-differential-equation-numerically-with-r/</guid>
+            <description>Today I am going to code a function that solves an ordinary differential equation numerically. The system I will be looking at is a pendulum. The pendulum with have a length equal to l, and a position of the pendulum can be described is l* theta. Theta is the angle of the string away from the vertical axis.
+First I am going to add variables for physical constants
+m &amp;lt;- 3 #Mass g &amp;lt;- 9.</description>
+            <content type="html"><![CDATA[
+
+
+<p>Today I am going to code a function that solves an ordinary differential equation numerically. The system I will be looking at is a pendulum. The pendulum with have a length equal to l, and a position of the pendulum can be described is l* theta. Theta is the angle of the string away from the vertical axis.</p>
+<p>First I am going to add variables for physical constants</p>
+<pre class="r"><code>m &lt;- 3 #Mass
+g &lt;- 9.82 #Gravitational constant 
+l &lt;- 2 #Length of the pendulum
+mu &lt;- .1 # Mu represents the loss of energy due to air resistance+</code></pre>
+<p>Next I’m going to create a function that takes arguments theta and theta_dot and returns theta_dubdot. m*g/l is also known as the torque (thanks Tyler) and multiplying the torque by sin(theta) shows the relationship between the angle and the speed. Lastly the terms -mu*theta_dot is showing the air resistance conditioned on the velocity.</p>
+<pre class="r"><code>theta_dubdot &lt;- function(theta, theta_dot){
+  return( -mu * theta_dot - (m*g/l) * sin(theta)) 
+}</code></pre>
+<p>Now to set the starting conditions of theta and theta_dot</p>
+<pre class="r"><code>theta0 &lt;- pi/3 #60 degrees 
+theta_dot0 &lt;- 0 #Zero angular velocity </code></pre>
+<p>Next I am going to code a solution to the equation that takes time as a input and returns theta. This function will approximate the theta at the end of the time t by taking a bunch of tiny steps equal to t/10.</p>
+<pre class="r"><code>find_theta &lt;- function(t.end) {
+  theta &lt;- theta0
+  theta_dot &lt;- theta_dot0
+  delta.t &lt;- .1
+  for (t in seq(from = 0, to = t.end, by = delta.t)){
+    theta &lt;- theta + theta_dot * delta.t
+    theta_dot &lt;- theta_dot + theta_dubdot(theta, theta_dot) * delta.t
+  }
+  return(theta)
+}
+
+find_theta(6)</code></pre>
+<pre><code>## [1] -0.7619322</code></pre>
+<p>Now I want to create a for loop that stores the values for theta between t= 1 and t = 15</p>
+<pre class="r"><code>results &lt;- data.frame(&quot;t&quot; = seq(0,15,.1), &quot;theta&quot; = seq(0,15,.1))
+index &lt;- 0
+for (i in seq(0,15,.1)) {
+  index &lt;- index + 1
+  results[index, ]$theta &lt;- find_theta(i)
+}</code></pre>
+<p>Lastly I am going to plot the pendulum position as theta*length over time.</p>
+<pre class="r"><code>ggplot(results, aes(t,theta*l)) + 
+  geom_line() + 
+  theme_dark() + 
+  xlab(&quot;time&quot;) + 
+  ylab(&quot;Theta * Length&quot;)</code></pre>
+<p><img src="/posts/2019-04-06-solving-a-differential-equation-numerically-with-r_files/figure-html/unnamed-chunk-7-1.png" width="576" /></p>
+<hr />
+<hr />
+<div id="now-to-visualize-how-changing-starting-positions-can-change-the-swing-of-the-pendulum" class="section level2">
+<h2>Now to visualize how changing starting positions can change the swing of the pendulum</h2>
+<p>After the interactive plot I will include the UI and Server code I used to make it. I used Shiny r. I hosted it for free on shinyapps.io and then embedded the app in to my blogdown rmd file.</p>
+<iframe width="850" height="700" scrolling="no" frameborder="no" src="https://jordan-a.shinyapps.io/pendulum/">
+</iframe>
+<pre><code># Load required packages --------------------------------------------------
+library(shiny)
+library(ggplot2)
+
+# Build ui.R --------------------------------------------------------------
+defaultTime &lt;- 1  ## Changed it to 1 for rapid debugging
+ui &lt;- fluidPage(# Application title
+  titlePanel(&quot;Physics engine pendulum.&quot;),
+  # Sidebar with a slider input for mass
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput(
+        &quot;mass&quot;,
+        &quot;Mass:&quot;,
+        min = 2,
+        max = 50,
+        value = 25
+      ),
+      sliderInput(
+        &quot;length&quot;,
+        &quot;Length:&quot;,
+        min = 3,
+        max = 50,
+        value = 3
+      ),
+      sliderInput(
+        &quot;theta0&quot;,
+        &quot;Starting Theta:&quot;,
+        min = 1,
+        max = 180,
+        value = 60
+      ),
+      sliderInput(
+        &quot;theta_dot0&quot;,
+        &quot;Starting Theta dot(Angular velocity):&quot;,
+        min = 0,
+        max = 5,
+        value = 0
+      ),
+      sliderInput(
+        &quot;time&quot;,
+        &quot;How long do you want to observe the pendulum:&quot;,
+        min = 1,
+        max = 30,
+        value = 15
+      )
+    ),
+    
+    # Show a plot of the generated distribution
+    mainPanel(plotOutput(&quot;linePlot&quot;))
+  ))
+
+# Build server.R ----------------------------------------------------------
+server &lt;- function(input, output) {
+  #constants 
+  g &lt;- 9.82 #Gravitational constant
+  mu &lt;- .1 # Mu represents the loss of energy due to air resistance+
+  
+  # reactive function that finds theta dub dot
+  theta_dubdot &lt;- reactive(function(theta, theta_dot) {
+    return(-mu * theta_dot - (input$mass * g / input$length) * sin(theta)) 
+  })
+  
+  # reactive function that finds theta 
+  find_theta &lt;- reactive(function(t.end) {
+    theta &lt;- input$theta0
+    theta_dot &lt;- input$theta_dot0
+    delta.t &lt;- .1
+    for (t in seq(from = 0, to = t.end, by = delta.t)) {
+      theta &lt;- theta + theta_dot * delta.t
+      theta_dot &lt;- theta_dot + theta_dubdot()(theta, theta_dot) * delta.t 
+    }
+    return(theta)
+  })
+  
+  ### rv$result uses input$time so it needs to be reactive() not reactiveValues()
+  rvResult &lt;- reactive({
+    req(input$time)
+    outputDF &lt;- data.frame(&quot;t&quot; = seq(0, input$time , .1),
+                           &quot;theta&quot; = seq(0, input$time , .1))
+    index &lt;- 0
+    for (i in seq(0, input$time, .1)) {
+      index &lt;- index + 1
+      computedTheta &lt;- find_theta()(i)
+      print(computedTheta)
+      outputDF$theta[index] &lt;- computedTheta 
+    }
+    return(outputDF)
+  })
+  
+  output$linePlot &lt;- renderPlot({
+    print(rvResult())
+    # draw the plot with the specified parameters
+    ggplot(rvResult(), aes(t, theta * input$length)) +
+      geom_line() +
+      theme_dark() +
+      xlab(&quot;Time&quot;) +
+      ylab(&quot;Position&quot;) +
+      labs(title = &quot;Ploting the position of the weight over time&quot;)# creating the plot
+  })
+}
+
+# Launch the Shiny app ----------------------------------------------------
+shinyApp(ui = ui, server = server, options = list(launch.browser = TRUE))</code></pre>
+</div>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Supervised machine learning used to classify plants</title>
+            <link>/posts/supervised-machine-learning-used-to-classify-plants/</link>
+            <pubDate>Wed, 03 Apr 2019 00:00:00 +0000</pubDate>
+            
+            <guid>/posts/supervised-machine-learning-used-to-classify-plants/</guid>
+            <description>Today we are going to look at supervised learning in R using the packages ‘class’, ‘tidyverse’, and ‘caret’. The goal of this model is to classify plants in to a certain species based off of the dimensions of the petals and sepals.
+1. Cleaning the data The first things I need to do in order to create a model is clean the data. This can include many different steps depending on how much needs to be done.</description>
+            <content type="html"><![CDATA[
+
+
+<p>Today we are going to look at supervised learning in R using the packages ‘class’, ‘tidyverse’, and ‘caret’. The goal of this model is to classify plants in to a certain species based off of the dimensions of the petals and sepals.</p>
+<div id="cleaning-the-data" class="section level2">
+<h2>1. Cleaning the data</h2>
+<p>The first things I need to do in order to create a model is clean the data. This can include many different steps depending on how much needs to be done. Luckily for this data set only a minimal amount is needed.</p>
+<pre class="r"><code>str(iris)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    150 obs. of  5 variables:
+##  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+##  $ Species     : Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<pre class="r"><code>iris.ml &lt;- iris %&gt;% mutate(Sepal.tot = Sepal.Length*Sepal.Width, 
+                           Petal.tot = Petal.Length*Petal.Width)
+
+##Now I will normalize the data using the scale() function.  
+iris.ml[-5] &lt;- scale(iris.ml[-5])
+
+## I am checking to see that the data is now normalized 
+## (mean == 0 &amp; sd == 1)
+table(&quot;mean&quot; = colMeans(iris.ml[-5]),&quot;sd&quot; =  apply(iris.ml[-5],2,sd))</code></pre>
+<pre><code>##                        sd
+## mean                    1
+##   -4.48067509021636e-16 1
+##   -3.714621203225e-17   1
+##   -2.84494650060196e-17 1
+##   1.13335267097151e-18  1
+##   1.13173359572727e-16  1
+##   2.03540887847945e-16  1</code></pre>
+</div>
+<div id="exploratory-data-analysis" class="section level2">
+<h2>2. Exploratory data analysis</h2>
+<p>First I am going to start with some EDA (exploratory data analysis). I’m going to create a scatterplot.</p>
+<pre class="r"><code>ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) + geom_point() </code></pre>
+<p><img src="/posts/2019-04-03-supervised-machine-learning-used-to-classify-plants_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(iris, aes(Petal.Length, Petal.Width, color = Species)) + geom_point()</code></pre>
+<p><img src="/posts/2019-04-03-supervised-machine-learning-used-to-classify-plants_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<pre class="r"><code>ggplot(iris.ml, aes(Petal.tot, Sepal.tot, color = Species)) + geom_point()</code></pre>
+<p><img src="/posts/2019-04-03-supervised-machine-learning-used-to-classify-plants_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
+<p>The plots show defined clusters. The second plot looking at petal dimensions has extremely well defined clusters. This indicates that the variables being plotted are good indicators at what species a plant is.</p>
+</div>
+<div id="preparing-the-data-for-modeling" class="section level2">
+<h2>3. Preparing the data for modeling</h2>
+<p>Now I will make a test and training subset of the data.</p>
+<pre class="r"><code>#Checking the proportions of each factor level
+prop.table(table(iris$Species))</code></pre>
+<pre><code>## 
+##     setosa versicolor  virginica 
+##       0.33       0.33       0.33</code></pre>
+<pre class="r"><code>#Now to create a variable called test that indicates if the data point is in the training or test set
+set.seed(12345)
+test &lt;- createDataPartition(iris$Species, p = 0.333, list = FALSE)
+
+# Checking to see that the two data sets are similar in distribution. 
+summary(iris[test, ])</code></pre>
+<pre><code>##   Sepal.Length  Sepal.Width   Petal.Length  Petal.Width         Species  
+##  Min.   :4.3   Min.   :2.2   Min.   :1.1   Min.   :0.10   setosa    :17  
+##  1st Qu.:5.1   1st Qu.:2.8   1st Qu.:1.6   1st Qu.:0.35   versicolor:17  
+##  Median :5.8   Median :3.0   Median :4.5   Median :1.30   virginica :17  
+##  Mean   :5.8   Mean   :3.1   Mean   :3.7   Mean   :1.21                  
+##  3rd Qu.:6.3   3rd Qu.:3.4   3rd Qu.:5.1   3rd Qu.:1.85                  
+##  Max.   :7.9   Max.   :4.0   Max.   :6.9   Max.   :2.40</code></pre>
+<pre class="r"><code>summary(iris[-test, ])</code></pre>
+<pre><code>##   Sepal.Length  Sepal.Width   Petal.Length  Petal.Width        Species  
+##  Min.   :4.4   Min.   :2.0   Min.   :1.0   Min.   :0.1   setosa    :33  
+##  1st Qu.:5.1   1st Qu.:2.8   1st Qu.:1.6   1st Qu.:0.3   versicolor:33  
+##  Median :5.8   Median :3.0   Median :4.3   Median :1.3   virginica :33  
+##  Mean   :5.8   Mean   :3.1   Mean   :3.8   Mean   :1.2                  
+##  3rd Qu.:6.4   3rd Qu.:3.3   3rd Qu.:5.2   3rd Qu.:1.8                  
+##  Max.   :7.7   Max.   :4.4   Max.   :6.7   Max.   :2.5</code></pre>
+<pre class="r"><code># I am going to create a vector containing all the labels of species
+iris.ml.test &lt;- iris.ml[test, ]
+iris.ml.train &lt;- iris.ml[-test, ]
+species.train.label &lt;- iris.ml.train$Species</code></pre>
+</div>
+<div id="supervised-machine-learning-classification-with-k-nearest-neighbors" class="section level2">
+<h2>4. Supervised machine learning: classification with K nearest neighbors</h2>
+<p>The machine learning method I am going to use is k nearest neighbors. This algorithm maps the variables of interest to a feature space and compares the data to its k nearest neighbors in order to minimize the Euclidian distance within clusters given the parameters set .I’m using the package ‘class’ and the function knn().</p>
+<pre class="r"><code>#I will start off by setting k = 1 this number is related on how many neighbors are included in the classification calculation. 
+iris.pred.knn &lt;- knn(iris.ml.train[-5], iris.ml.test[-5], 
+                     cl = species.train.label, k = 1 )
+
+#In order to see how well this model performed I am going to make a table. 
+species.test.label &lt;- iris.ml.test$Species
+
+table(iris.pred.knn, species.test.label)</code></pre>
+<pre><code>##              species.test.label
+## iris.pred.knn setosa versicolor virginica
+##    setosa         17          0         0
+##    versicolor      0         14         4
+##    virginica       0          3        13</code></pre>
+<div id="picking-k" class="section level3">
+<h3>4.1 Picking k</h3>
+<p>In order to find the right k we need to decide how we will be comparing them. I think a measure of accuracy via comparing predictions to actual labels will work well.</p>
+<pre class="r"><code>set.seed(12345)
+results &lt;- map_dbl(1:10, function(k){
+  model &lt;- knn(iris.ml.train[-5], iris.ml.test[-5], 
+                     cl = species.train.label, k = k)
+  
+  mean(model == species.test.label)})
+
+result_df &lt;- data.frame(
+  k = 1:10,
+  results = results
+)
+
+result_df %&gt;% 
+  ggplot(aes(x = k, y = results))+ 
+  geom_line() +
+  scale_x_continuous(breaks = 1:10)</code></pre>
+<p><img src="/posts/2019-04-03-supervised-machine-learning-used-to-classify-plants_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Picking k is up to the one making the model but in theory you want the lowest K with out giving up too much accuracy. I am going to go with 5 however 7 could be a good choice too.</p>
+<pre class="r"><code>#I will now set k = 5
+iris.pred.knn.5 &lt;- knn(iris.ml.train[-5], iris.ml.test[-5], 
+                     cl = species.train.label, k = 5 )
+
+#In order to see how well this model performed I am going to make a table. 
+species.test.label &lt;- iris.ml.test$Species
+
+table(iris.pred.knn.5, species.test.label)</code></pre>
+<pre><code>##                species.test.label
+## iris.pred.knn.5 setosa versicolor virginica
+##      setosa         17          0         0
+##      versicolor      0         16         1
+##      virginica       0          1        16</code></pre>
+<pre class="r"><code>mean(iris.pred.knn.5 == species.test.label)</code></pre>
+<pre><code>## [1] 0.96</code></pre>
+</div>
+</div>
+<div id="results" class="section level2">
+<h2>5. Results</h2>
+<p>So we have now achieved a classification accuracy of 96.08% that of course is extremely good. However, I would be worried about potential over fitting of the data given that we don’t have a very large data set.</p>
+<p>In order to get better insight in to the confidence of each classification prediction we can set the prob = TRUE.</p>
+<pre class="r"><code>iris.pred.knn.5 &lt;- knn(iris.ml.train[-5], iris.ml.test[-5], cl = species.train.label, k = 5 , prob = TRUE)
+
+#Now to extract the &quot;prob&quot; attribute from the knn object
+iris.prob.knn &lt;- attr(iris.pred.knn.5, &quot;prob&quot;)
+
+mean(iris.prob.knn)</code></pre>
+<pre><code>## [1] 0.93</code></pre>
+<p>So on average the model is 92.55% sure about its classification choices.</p>
+</div>
+]]></content>
+        </item>
+        
+    </channel>
+</rss>

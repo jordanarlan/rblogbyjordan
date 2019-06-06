@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R blog by Jordan</title>
+    <link>/</link>
+    <description>Recent content on R blog by Jordan</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 24 May 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Logistic regression used to predict heart disease</title>
+      <link>/posts/logistic-regression-used-to-predict-heart-disease/</link>
+      <pubDate>Fri, 24 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/logistic-regression-used-to-predict-heart-disease/</guid>
+      <description>1. Heart disease and potential risk factors  Millions of people are getting some sort of heart disease every year and heart disease is the biggest killer of both men and women in the United States and around the world. Statistical analysis has identified many risk factors associated with heart disease such as age, blood pressure, total cholesterol, diabetes, hypertension, family history of heart disease, obesity, lack of physical exercise, etc.</description>
+    </item>
+    
+    <item>
+      <title>Exploritory Data Analysis in the FIFA database</title>
+      <link>/posts/exploritory-data-analysis-in-the-fifa-database/</link>
+      <pubDate>Thu, 16 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/exploritory-data-analysis-in-the-fifa-database/</guid>
+      <description>Introduction From Wikipedia:
+FIFA 19 is a football simulation video game developed by EA Vancouver as part of Electronic Arts’ FIFA series. Announced on 6 June 2018 for its E3 2018 press conference, it was released on 28 September 2018 for PlayStation 3, PlayStation 4, Xbox 360, Xbox One, Nintendo Switch, and Microsoft Windows. It is the 26th installment in the FIFA series. As with FIFA 18, Cristiano Ronaldo appears as the cover athlete of the regular edition.</description>
+    </item>
+    
+    <item>
+      <title>Video game sales over time.</title>
+      <link>/posts/video-game-sales-over-time/</link>
+      <pubDate>Sun, 14 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/video-game-sales-over-time/</guid>
+      <description>library(tidyverse) 1. Loading the data I am starting off by loading the data from a Git repo. I did it this way so that it was possible to follow along if you would like. you can copy and paste the exact code below.
+data &amp;lt;- read.csv(&amp;quot;https://github.com/jordanarlan/rblogbyjordan/raw/master/Video_Games_Sales_as_at_22_Dec_2016.csv&amp;quot;)  2. Exploritory analysis. str(data) ## &amp;#39;data.frame&amp;#39;: 16719 obs. of 16 variables: ## $ Name : Factor w/ 11563 levels &amp;quot;&amp;quot;,&amp;quot; Beyblade Burst&amp;quot;,..: 11059 9406 5572 11061 7411 9771 6693 11057 6696 2620 .</description>
+    </item>
+    
+    <item>
+      <title>Solving a differential equation numerically with R</title>
+      <link>/posts/solving-a-differential-equation-numerically-with-r/</link>
+      <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/solving-a-differential-equation-numerically-with-r/</guid>
+      <description>Today I am going to code a function that solves an ordinary differential equation numerically. The system I will be looking at is a pendulum. The pendulum with have a length equal to l, and a position of the pendulum can be described is l* theta. Theta is the angle of the string away from the vertical axis.
+First I am going to add variables for physical constants
+m &amp;lt;- 3 #Mass g &amp;lt;- 9.</description>
+    </item>
+    
+    <item>
+      <title>Supervised machine learning used to classify plants</title>
+      <link>/posts/supervised-machine-learning-used-to-classify-plants/</link>
+      <pubDate>Wed, 03 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/supervised-machine-learning-used-to-classify-plants/</guid>
+      <description>Today we are going to look at supervised learning in R using the packages ‘class’, ‘tidyverse’, and ‘caret’. The goal of this model is to classify plants in to a certain species based off of the dimensions of the petals and sepals.
+1. Cleaning the data The first things I need to do in order to create a model is clean the data. This can include many different steps depending on how much needs to be done.</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Sun, 10 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>My name is Jordan, and I graduated from the University of Oklahoma in December of 2018. I studied Economics and Data analytics. After graduating I was hired to work at the Better Business Bureau of Oklahoma city. I enjoy learning about statistics and programming and this blog is an outlet for me to use and show what I have learned.</description>
+    </item>
+    
+  </channel>
+</rss>

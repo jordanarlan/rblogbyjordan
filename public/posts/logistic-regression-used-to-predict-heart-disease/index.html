@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author"
+    content="Jordan Arlan">
+<meta name="description"
+    content="1. Heart disease and potential risk factors  Millions of people are getting some sort of heart disease every year and heart disease is the biggest killer of both men and women in the United States and around the world. Statistical analysis has identified many risk factors associated with heart disease such as age, blood pressure, total cholesterol, diabetes, hypertension, family history of heart disease, obesity, lack of physical exercise, etc." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/logistic-regression-used-to-predict-heart-disease/" />
+
+
+<title>
+    
+    Logistic regression used to predict heart disease :: R blog by Jordan 
+    
+</title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+<link rel="stylesheet" href="/scss/main.min.099699ab246bf26f50616f7c9f00c79d46110459d1bd727b2d07d6fc09ece082.css">
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#252627">
+<link rel="shortcut icon" href="/favicon.ico">
+<meta name="theme-color" content="#252627">
+<meta itemprop="name" content="Logistic regression used to predict heart disease">
+<meta itemprop="description" content="1. Heart disease and potential risk factors  Millions of people are getting some sort of heart disease every year and heart disease is the biggest killer of both men and women in the United States and around the world. Statistical analysis has identified many risk factors associated with heart disease such as age, blood pressure, total cholesterol, diabetes, hypertension, family history of heart disease, obesity, lack of physical exercise, etc.">
+
+
+<meta itemprop="datePublished" content="2019-05-24T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-05-24T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2105">
+
+
+
+<meta itemprop="keywords" content="Health," />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/"/>
+
+<meta name="twitter:title" content="Logistic regression used to predict heart disease"/>
+<meta name="twitter:description" content="1. Heart disease and potential risk factors  Millions of people are getting some sort of heart disease every year and heart disease is the biggest killer of both men and women in the United States and around the world. Statistical analysis has identified many risk factors associated with heart disease such as age, blood pressure, total cholesterol, diabetes, hypertension, family history of heart disease, obesity, lack of physical exercise, etc."/>
+
+
+
+<meta property="article:section" content="Machine learning" />
+
+<meta property="article:published_time" content="2019-05-24 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+    </head>
+
+    <body class="dark-theme">
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <span class="logo__mark">></span>
+            <span class="logo__text">Home.page$</span>
+            <span class="logo__cursor"></span>
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/about">About</a></li><li><a href="/posts">Posts</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+
+            <span class="theme-toggle"><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+  3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+  13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"/>
+</svg>
+</span>
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+    <main class="post">
+
+        <div class="post-info">
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>10 minutes
+
+            
+
+            </p>
+        </div>
+
+        <article>
+            <h1 class="post-title"><a href="/posts/logistic-regression-used-to-predict-heart-disease/">Logistic regression used to predict heart disease</a></h1>
+
+            
+
+            <div class="post-content">
+                
+
+
+<div id="heart-disease-and-potential-risk-factors" class="section level2">
+<h2>1. Heart disease and potential risk factors</h2>
+<p>
+Millions of people are getting some sort of heart disease every year and heart disease is the biggest killer of both men and women in the United States and around the world. Statistical analysis has identified many risk factors associated with heart disease such as age, blood pressure, total cholesterol, diabetes, hypertension, family history of heart disease, obesity, lack of physical exercise, etc. In this notebook, we’re going to run statistical testing and regression models using the Cleveland heart disease dataset to assess one particular factor – maximum heart rate one can achieve during exercise and how it is associated with a higher likelihood of getting heart disease.
+</p>
+<p>
+<img src="https://s3.amazonaws.com/assets.datacamp.com/production/project_445/img/run31.png" height="300" width="1000">
+</p>
+<pre class="r"><code> library(readr)
+# Read datasets Cleveland_hd.csv into hd_data
+hd_data &lt;- read_csv(&quot;input/Cleveland_hd.csv&quot;)
+
+# Take a look at the first 5 rows of hd_data
+head(hd_data, 5)</code></pre>
+<pre><code>## # A tibble: 5 x 14
+##     age   sex    cp trestbps  chol   fbs restecg thalach exang oldpeak
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;int&gt;   &lt;dbl&gt;
+## 1    63     1     1      145   233     1       2     150     0     2.3
+## 2    67     1     4      160   286     0       2     108     1     1.5
+## 3    67     1     4      120   229     0       2     129     1     2.6
+## 4    37     1     3      130   250     0       0     187     0     3.5
+## 5    41     0     2      130   204     0       2     172     0     1.4
+## # ... with 4 more variables: slope &lt;int&gt;, ca &lt;int&gt;, thal &lt;int&gt;,
+## #   class &lt;int&gt;</code></pre>
+</div>
+<div id="converting-diagnosis-class-into-outcome-variable" class="section level2">
+<h2>2. Converting diagnosis class into outcome variable</h2>
+<p>
+We noticed that the outcome variable <code>class</code> has more than two levels. According to the codebook, any non-zero values can be coded as an “event.” Let’s create a new variable called <code>hd</code> to represent a binary 1/0 outcome.
+</p>
+<p>
+There are a few other categorical/discrete variables in the dataset. Let’s also convert sex into ‘factor’ type for next step analysis. Otherwise, R will treat them as continuous by default.
+</p>
+<p>
+The full data dictionary is also displayed here.
+</p>
+<p>
+<img src="https://s3.amazonaws.com/assets.datacamp.com/production/project_445/img/datadict.png" height="500" width="750">
+</p>
+</div>
+<div id="section" class="section level2">
+<h2></h2>
+<pre class="r"><code># Load the tidyverse package
+library(tidyverse)
+
+# Use the &#39;mutate&#39; function from dplyr to recode our data
+hd_data %&gt;% mutate(hd = ifelse(class &gt; 0, 1, 0))-&gt; hd_data
+
+# Recode sex using mutate function and save as hd_data
+hd_data %&gt;% mutate(sex = factor(hd_data$sex, levels = 0:1, labels = c(&quot;Female&quot;, &quot;Male&quot;)))-&gt; hd_data</code></pre>
+</div>
+<div id="identifying-important-clinical-variables" class="section level2">
+<h2>3. Identifying important clinical variables</h2>
+<p>
+Now, let’s use statistical tests to see which ones are related to heart disease. We can explore the associations for each variable in the dataset. Depending on the type of the data (i.e., continuous or categorical), we use t-test or chi-squared test to calculate the p-values.
+</p>
+<p>
+Recall, t-test is used to determine whether there is a significant difference between the means of two groups (e.g., is the mean age from group A different from the mean age from group B?). A chi-squared test for independence compares two variables in a contingency table to see if they are related. In a more general sense, it tests to see whether distributions of categorical variables differ from each another.
+</p>
+<pre class="r"><code># Does sex have an effect? Sex is a binary variable in this dataset,
+# so the appropriate test is chi-squared test
+hd_sex &lt;- chisq.test(hd_data$sex, hd_data$hd)
+
+# Does age have an effect? Age is continuous, so we use a t-test
+hd_age &lt;- t.test(hd_data$age ~ hd_data$hd)
+
+# What about thalach? Thalach is continuous, so we use a t-test
+hd_heartrate &lt;- t.test(hd_data$thalach ~ hd_data$hd)
+
+# Print the results to see if p&lt;0.05.
+print(hd_sex)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test with Yates&#39; continuity correction
+## 
+## data:  hd_data$sex and hd_data$hd
+## X-squared = 22.043, df = 1, p-value = 2.667e-06</code></pre>
+<pre class="r"><code>print(hd_age)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  hd_data$age by hd_data$hd
+## t = -4.0303, df = 300.93, p-value = 7.061e-05
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -6.013385 -2.067682
+## sample estimates:
+## mean in group 0 mean in group 1 
+##        52.58537        56.62590</code></pre>
+<pre class="r"><code>print(hd_heartrate)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  hd_data$thalach by hd_data$hd
+## t = 7.8579, df = 272.27, p-value = 9.106e-14
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  14.32900 23.90912
+## sample estimates:
+## mean in group 0 mean in group 1 
+##         158.378         139.259</code></pre>
+</div>
+<div id="explore-the-associations-graphically-i" class="section level2">
+<h2>4. Explore the associations graphically (i)</h2>
+<p>
+A good picture is worth a thousand words. In addition to p-values from statistical tests, we can plot the age, sex, and maximum heart rate distributions with respect to our outcome variable. This will give us a sense of both the direction and magnitude of the relationship.
+</p>
+<p>
+First, let’s plot age using a boxplot since it is a continuous variable.
+</p>
+<pre class="r"><code># Recode hd to be labelled
+hd_data%&gt;% mutate(hd_labelled = ifelse(hd == 0, &quot;No Disease&quot;, &quot;Disease&quot;)) -&gt; hd_data
+
+# age vs hd
+ggplot(data = hd_data, aes(x = hd_labelled ,y = age)) + geom_boxplot()</code></pre>
+<p><img src="/posts/2019-05-24-logistic-regression-used-to-predict-heart-disease_files/figure-html/unnamed-chunk-4-1.png" width="864" /></p>
+</div>
+<div id="explore-the-associations-graphically-ii" class="section level2">
+<h2>5. Explore the associations graphically (ii)</h2>
+<p>
+Next, let’s plot sex using a barplot since it is a binary variable in this dataset.
+</p>
+<pre class="r"><code># sex vs hd
+ggplot(data = hd_data,aes( x = hd_labelled, fill = sex)) + geom_bar(position=&quot;fill&quot;) + ylab(&quot;Sex %&quot;)</code></pre>
+<p><img src="/posts/2019-05-24-logistic-regression-used-to-predict-heart-disease_files/figure-html/unnamed-chunk-5-1.png" width="864" /></p>
+</div>
+<div id="explore-the-associations-graphically-iii" class="section level2">
+<h2>6. Explore the associations graphically (iii)</h2>
+<p>
+And finally, let’s plot thalach using a boxplot since it is a continuous variable.
+</p>
+<pre class="r"><code># max heart rate vs hd
+ggplot(data = hd_data,aes(x = hd_labelled, y = thalach)) + geom_boxplot()</code></pre>
+<p><img src="/posts/2019-05-24-logistic-regression-used-to-predict-heart-disease_files/figure-html/unnamed-chunk-6-1.png" width="864" /></p>
+</div>
+<div id="putting-all-three-variables-in-one-model" class="section level2">
+<h2>7. Putting all three variables in one model</h2>
+<p>
+The plots and the statistical tests both confirmed that all the three variables are highly significantly associated with our outcome (p&lt;0.001 for all tests).
+</p>
+<p>
+In general, we want to use multiple logistic regression when we have one binary and two or more predicting variables. The binary variable is the dependent (Y) variable; we are studying the effect that the independent (X) variables have on the probability of obtaining a particular value of the dependent variable. For example, we might want to know the effect that maximum heart rate, age, and sex have on the probability that a person will have a heart disease in the next year. The model will also tell us what the remaining effect of maximum heart rate is after we control or adjust for the effects from the other two effectors.
+</p>
+<p>
+The <code>glm()</code> command is designed to perform generalized linear models (regressions) on binary outcome data, count data, probability data, proportion data, and many other data types. In our case, the outcome is binary following a binomial distribution.
+</p>
+<pre class="r"><code># use glm function from base R and specify the family argument as binomial
+model &lt;- glm(data = hd_data, family = &#39;binomial&#39;, hd ~ age + sex + thalach)
+
+# extract the model summary
+summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = hd ~ age + sex + thalach, family = &quot;binomial&quot;, 
+##     data = hd_data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.2250  -0.8486  -0.4570   0.9043   2.1156  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  3.111610   1.607466   1.936   0.0529 .  
+## age          0.031886   0.016440   1.940   0.0524 .  
+## sexMale      1.491902   0.307193   4.857 1.19e-06 ***
+## thalach     -0.040541   0.007073  -5.732 9.93e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 417.98  on 302  degrees of freedom
+## Residual deviance: 332.85  on 299  degrees of freedom
+## AIC: 340.85
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+<div id="extracting-useful-information-from-the-model-output" class="section level2">
+<h2>8. Extracting useful information from the model output</h2>
+<p>
+It’s common practice in medical research to report Odds Ratio (OR) to quantify how strongly the presence or absence of property A is associated with the presence or absence of the outcome. When the OR is greater than 1, we say A is positively associated with outcome B (increases the Odds of having B). Otherwise, we say A is negatively associated with B (decreases the Odds of having B).
+</p>
+<p>
+The raw glm coefficient table in R represents the log(Odds Ratio) of the outcome. Therefore, we need to convert the values to the original OR scale and calculate the corresponding 95% Confidence Interval (CI) of the estimated Odds Ratio when reporting results from a logistic regression.
+</p>
+<pre class="r"><code># load the broom package
+library(broom)
+
+# tidy up the coefficient table
+tidy_m &lt;- tidy(model)
+tidy_m</code></pre>
+<pre><code>## # A tibble: 4 x 5
+##   term        estimate std.error statistic       p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;
+## 1 (Intercept)   3.11     1.61         1.94 0.0529       
+## 2 age           0.0319   0.0164       1.94 0.0524       
+## 3 sexMale       1.49     0.307        4.86 0.00000119   
+## 4 thalach      -0.0405   0.00707     -5.73 0.00000000993</code></pre>
+<pre class="r"><code># calculate OR
+tidy_m$OR &lt;- exp(tidy_m$estimate) 
+
+# calculate 95% CI and save as lower CI and upper CI
+tidy_m$lower_CI &lt;- exp(tidy_m$estimate - 1.96 * tidy_m$std.error)
+tidy_m$upper_CI &lt;- exp(tidy_m$estimate + 1.96 * tidy_m$std.error)
+
+# display the updated coefficient table
+tidy_m</code></pre>
+<pre><code>## # A tibble: 4 x 8
+##   term     estimate std.error statistic   p.value     OR lower_CI upper_CI
+##   &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Interc…   3.11     1.61         1.94   5.29e-2 22.5      0.962  524.   
+## 2 age        0.0319   0.0164       1.94   5.24e-2  1.03     1.000    1.07 
+## 3 sexMale    1.49     0.307        4.86   1.19e-6  4.45     2.43     8.12 
+## 4 thalach   -0.0405   0.00707     -5.73   9.93e-9  0.960    0.947    0.974</code></pre>
+</div>
+<div id="predicted-probabilities-from-our-model" class="section level2">
+<h2>9. Predicted probabilities from our model</h2>
+<p>
+So far, we have built a logistic regression model and examined the model coefficients/ORs. We may wonder how can we use this model we developed to predict a person’s likelihood of having heart disease given his/her age, sex, and maximum heart rate. Furthermore, we’d like to translate the predicted probability into a decision rule for clinical use by defining a cutoff value on the probability scale. In practice, when an individual comes in for a health check-up, the doctor would like to know the predicted probability of heart disease, for specific values of the predictors: a 45-year-old female with a max heart rate of 150. To do that, we create a data frame called newdata, in which we include the desired values for our prediction.
+</p>
+<pre class="r"><code># get the predicted probability in our dataset using the predict() function
+pred_prob &lt;- predict(model,hd_data, type = &quot;response&quot;)
+
+# create a decision rule using probability 0.5 as cutoff and save the predicted decision into the main data frame
+hd_data$pred_hd &lt;- ifelse(pred_prob &gt;= .5, 1, 0)
+
+# create a newdata data frame to save a new case information
+newdata &lt;- data.frame(age = 45, sex = &quot;Female&quot;, thalach = 150)
+
+# predict probability for this new case and print out the predicted value
+p_new &lt;- predict(model,newdata, type = &quot;response&quot;)
+p_new</code></pre>
+<pre><code>##         1 
+## 0.1773002</code></pre>
+</div>
+<div id="model-performance-metrics" class="section level2">
+<h2>10. Model performance metrics</h2>
+<p>
+Are the predictions accurate? How well does the model fit our data? We are going to use some common metrics to evaluate the model performance. The most straightforward one is Accuracy, which is the proportion of the total number of predictions that were correct. On the opposite, we can calculate the classification error rate using 1- accuracy. However, accuracy can be misleading when the response is rare (i.e., imbalanced response). Another popular metric, Area Under the ROC curve (AUC), has the advantage that it’s independent of the change in the proportion of responders. AUC ranges from 0 to 1. The closer it gets to 1 the better the model performance. Lastly, a confusion matrix is an N X N matrix, where N is the level of outcome. For the problem at hand, we have N=2, and hence we get a 2 X 2 matrix. It cross-tabulates the predicted outcome levels against the true outcome levels.
+</p>
+<p>
+After these metrics are calculated, we’ll see (from the logistic regression OR table) that older age, being male and having a lower max heart rate are all risk factors for heart disease. We can also apply our model to predict the probability of having heart disease. For a 45 years old female who has a max heart rate of 150, our model generated a heart disease probability of 0.177 indicating low risk of heart disease. Although our model has an overall accuracy of 0.71, there are cases that were misclassified as shown in the confusion matrix. One way to improve our current model is to include other relevant predictors from the dataset into our model, but that’s a task for another day!
+</p>
+<pre class="r"><code># load Metrics package
+library(Metrics)
+
+# calculate auc, accuracy, clasification error
+auc &lt;- auc(hd_data$hd, hd_data$pred_hd)
+accuracy &lt;- accuracy(hd_data$hd, hd_data$pred_hd)
+classification_error &lt;- ce(hd_data$hd, hd_data$pred_hd)
+
+# print out the metrics on to screen
+print(paste(&quot;AUC=&quot;, auc))</code></pre>
+<pre><code>## [1] &quot;AUC= 0.706483593612915&quot;</code></pre>
+<pre class="r"><code>print(paste(&quot;Accuracy=&quot;, accuracy))</code></pre>
+<pre><code>## [1] &quot;Accuracy= 0.70957095709571&quot;</code></pre>
+<pre class="r"><code>print(paste(&quot;Classification Error=&quot;, classification_error))</code></pre>
+<pre><code>## [1] &quot;Classification Error= 0.29042904290429&quot;</code></pre>
+<pre class="r"><code># confusion matrix
+table(hd_data$hd, hd_data$pred_hd, dnn=c( &#39;True Status&#39; ,&#39;Predicted Status&#39;)) # confusion matrix</code></pre>
+<pre><code>##            Predicted Status
+## True Status   0   1
+##           0 122  42
+##           1  46  93</code></pre>
+</div>
+
+            </div>
+        </article>
+
+        <hr />
+
+        <div class="post-info">
+                <p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="/tags/health">Health</a></span>
+                </p>
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2105 Words</p>
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2019-05-23 19:00 -0500</p>
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Read other posts</span>
+                    <hr />
+                </div>
+
+                <div class="pagination__buttons">
+                    
+
+                    
+                        <span class="button next">
+                            <a href="/posts/exploritory-data-analysis-in-the-fifa-database/">
+                                <span class="button__text">Exploritory Data Analysis in the FIFA database</span>
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    
+                </div>
+            </div>
+        
+
+        
+    </main>
+
+            </div>
+
+            
+                <footer class="footer">
+
+</footer>
+            
+        </div>
+
+        
+
+
+
+
+
+<script type="text/javascript" src="/js/bundle.min.cf7871ed49474a80ed457154d24e61f7881adbe0f9384951a74ac46b688a39a4dbfa68bc6d37baeb058186de354ead3487d4ee7f083ea4cba860c48600b694f3.js" integrity="sha512-z3hx7UlHSoDtRXFU0k5h94ga2&#43;D5OElRp0rEa2iKOaTb&#43;mi8bTe66wWBht41Tq00h9Tufwg&#43;pMuoYMSGALaU8w=="></script>
+
+
+
+    </body>
+</html>

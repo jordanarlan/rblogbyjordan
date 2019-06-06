@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Physics on R blog by Jordan</title>
+    <link>/categories/physics/</link>
+    <description>Recent content in Physics on R blog by Jordan</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 06 Apr 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/physics/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Solving a differential equation numerically with R</title>
+      <link>/posts/solving-a-differential-equation-numerically-with-r/</link>
+      <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/solving-a-differential-equation-numerically-with-r/</guid>
+      <description>Today I am going to code a function that solves an ordinary differential equation numerically. The system I will be looking at is a pendulum. The pendulum with have a length equal to l, and a position of the pendulum can be described is l* theta. Theta is the angle of the string away from the vertical axis.
+First I am going to add variables for physical constants
+m &amp;lt;- 3 #Mass g &amp;lt;- 9.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,157 @@
+---
+title: Exploritory Data Analysis in the FIFA database
+author: Jordan Arlan
+date: '2019-05-16'
+slug: exploritory-data-analysis-in-the-fifa-database
+categories:
+  - Machine learning
+tags:
+  - Machine learning
+images: ~
+---
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>From Wikipedia:</p>
+<p><em>FIFA 19 is a football simulation video game developed by EA Vancouver as part of Electronic Arts’ FIFA series. Announced on 6 June 2018 for its E3 2018 press conference, it was released on 28 September 2018 for PlayStation 3, PlayStation 4, Xbox 360, Xbox One, Nintendo Switch, and Microsoft Windows. It is the 26th installment in the FIFA series. As with FIFA 18, Cristiano Ronaldo appears as the cover athlete of the regular edition.</em> <a href="https://en.wikipedia.org/wiki/FIFA_19" class="uri">https://en.wikipedia.org/wiki/FIFA_19</a></p>
+<p>The game features a number of different playing modes, however Career mode as a manager holds the most appeal for me.</p>
+<p>The following analysis will be tailored toward having the best chance at success in that mode for anyone interested.</p>
+<p><strong>Some things I want to analyse in this paper:</strong></p>
+<ul>
+<li>High level Exploratory Data Analysis</li>
+<li>Which features are highly correlated with a player’s overall rating by player position</li>
+<li>Analyse the differences between a player’s current rating and their potential rating</li>
+<li>Find out which teams have the highest potential</li>
+<li>Find out the youngest teams / oldest teams</li>
+<li>Use k-means clustering to try to find “bargains”; ie if there is someone with the same skills/potential, can they be found for a bargain?</li>
+</ul>
+</div>
+<div id="clean-and-prepare-data-for-analysis" class="section level2">
+<h2>Clean and prepare data for analysis</h2>
+<div id="feature-enginering" class="section level3">
+<h3>Feature enginering</h3>
+<ol style="list-style-type: decimal">
+<li><p><strong>Player Valuation</strong> - The raw data has player valuations as a character string, with a designation at the end specifying whether the value is thousands or millions. Regex is used to create a numeric variable called ValueNumeric_pounds</p></li>
+<li><p><strong>Player Wage</strong> - See Point 1 above. Same transformation has occurred for player Wage</p></li>
+<li><p><strong>Player Positions</strong> - There are 28 different positions in FIFA2019. To make analysis less granular, I have decided to create four groupings; GK, DEF, MID and FWD.</p></li>
+<li><p><strong>Player Age</strong> - I have decided to group players into age buckets, in 5 year increments other than for players 20 years and younger, and players 35 years and over.</p></li>
+<li><p><strong>Height</strong> - I am going to parse the Height data to numerical data in Inches.</p></li>
+<li><p><strong>Weight</strong> - I am going to do the same thing with weight as height.</p></li>
+</ol>
+<pre class="r"><code>#Parse the value data from a string to numerical
+fifa_data &lt;- fifa_data %&gt;%
+  mutate(ValueMultiplier = ifelse(str_detect(Value, &quot;K&quot;), 1000,
+                           ifelse(str_detect(Value, &quot;M&quot;), 1000000, 1))) %&gt;%
+  mutate(ValueNumeric_pounds = as.numeric(str_extract(Value, &quot;[[:digit:]]+\\.*[[:digit:]]*&quot;)) * ValueMultiplier) %&gt;%
+  mutate(Position = ifelse(is.na(Position), &quot;Unknown&quot;, Position))
+
+
+#Parse the wage data from a string to numerical
+fifa_data &lt;- fifa_data %&gt;%
+  mutate(WageMultiplier = ifelse(str_detect(Wage, &quot;K&quot;), 1000,
+                          ifelse(str_detect(Wage, &quot;M&quot;), 1000000, 1))) %&gt;%
+  mutate(WageNumeric_pounds = as.numeric(str_extract(Wage, &quot;[[:digit:]]+\\.*[[:digit:]]*&quot;)) * WageMultiplier)
+
+#show unique positions
+positions &lt;- unique(fifa_data$Position)
+
+
+gk &lt;- &quot;GK&quot;
+defs &lt;- positions[str_detect(positions, &quot;B$&quot;)]
+mids &lt;- positions[str_detect(positions, &quot;M$&quot;)]
+f1 &lt;- positions[str_detect(positions, &quot;F$&quot;)]
+f2 &lt;- positions[str_detect(positions, &quot;S$&quot;)]
+f3 &lt;- positions[str_detect(positions, &quot;T$&quot;)]
+f4 &lt;- positions[str_detect(positions, &quot;W$&quot;)]
+fwds &lt;- c(f1, f2, f3, f4)
+
+#binning the positions in to 4 catagories
+fifa_data &lt;- fifa_data %&gt;%
+  mutate(PositionGroup = ifelse(Position %in% gk, &quot;GK&quot;,
+                         ifelse(Position %in% defs,&quot;DEF&quot;,
+                         ifelse(Position %in% mids,&quot;MID&quot;,
+                         ifelse(Position %in% fwds, &quot;FWD&quot;, &quot;Unknown&quot;))
+  )))
+
+#binning the age data in to 5 catagories
+fifa_data &lt;- fifa_data %&gt;%
+  mutate(AgeGroup = ifelse(
+                      Age &lt;= 20,
+                      &quot;20 and under&quot;,
+                      ifelse(
+                        Age &gt; 20 &amp; Age &lt;= 25,
+                        &quot;21 to 25&quot;,
+                        ifelse(
+                          Age &gt; 25 &amp; Age &lt;= 30,
+                          &quot;25 to 30&quot;,
+                          ifelse(
+                            Age &gt; 30 &amp; Age &lt;= 35,
+                            &quot;31 to 35&quot;, &quot;Over 35&quot;)
+      )
+    )
+  ))
+#going form X&#39;X&#39;&#39; format to just a numaric inches
+fifa_data$Height &lt;- sapply(strsplit(as.character(fifa_data$Height),&quot;&#39;|\&quot;&quot;),
+                          function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
+
+#simply extracting thenumbers out of the string
+fifa_data$Weight &lt;- extract_numeric(fifa_data$Weight)</code></pre>
+<pre><code>## extract_numeric() is deprecated: please use readr::parse_number() instead</code></pre>
+<pre class="r"><code>fifa_data$AgeGroup &lt;- factor(fifa_data$AgeGroup)</code></pre>
+</div>
+</div>
+<div id="eda-exploritory-data-analysis" class="section level2">
+<h2>EDA (Exploritory Data Analysis)</h2>
+<pre class="r"><code>fifa_cor &lt;- fifa_data %&gt;%
+  select_if(is.numeric) %&gt;%
+  cor(use = &quot;complete.obs&quot;)
+
+
+  p.mat &lt;- fifa_data %&gt;%
+           select_if(is.numeric) %&gt;%
+           cor.mtest()
+
+  corrplot(
+  fifa_cor,
+  diag = FALSE,
+  order = &quot;AOE&quot;,
+  tl.pos = &quot;td&quot;,
+  tl.cex = 1,
+  method = &quot;color&quot;,
+  type = &quot;upper&quot;,
+  p.mat = p.mat$p,
+  sig.level = 0.01
+  )</code></pre>
+<p><img src="/posts/2019-05-16-looking-at-soccer-players-in-the-fifa-database_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
+<p>A couple of key take aways from the corrlation plot are that Potential, Overall, Reactions, and Composure are highly corralted. Also apparntly the better goalie you are the worse you tend to be at dribbling. Im also looking to see that the relationships folow my intuition so far i havent noticed any thing out of the ordinary</p>
+<div id="overall-ratings" class="section level3">
+<h3>Overall Ratings</h3>
+<p>Player ratings are normally distributed in FIFA19, with a mean of 66.2387 and standard deviation of 6.9089</p>
+<pre class="r"><code>ovr.age.mean &lt;- fifa_data %&gt;%
+                  group_by(AgeGroup) %&gt;%
+                  summarize(&#39;Mean Overall&#39; = round(mean(Overall, na.rm = T),2))
+
+fifa_data %&gt;%
+  ggplot(aes(x= Overall)) +
+  geom_density(aes(color = AgeGroup)) </code></pre>
+<p><img src="/posts/2019-05-16-looking-at-soccer-players-in-the-fifa-database_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+<pre class="r"><code>print(ovr.age.mean)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   AgeGroup     `Mean Overall`
+##   &lt;fct&gt;                 &lt;dbl&gt;
+## 1 20 and under           59.7
+## 2 21 to 25               66.0
+## 3 25 to 30               69.1
+## 4 31 to 35               69.5
+## 5 Over 35                68.0</code></pre>
+<pre class="r"><code>ggOver &lt;- ggplot(fifa_data, aes(y = Overall))
+
+ggOver + geom_smooth(aes(x = Age)) + geom_smooth(aes(x = Age, y = Potential, color = &quot;red&quot;))</code></pre>
+<p><img src="/posts/2019-05-16-looking-at-soccer-players-in-the-fifa-database_files/figure-html/unnamed-chunk-5-1.png" width="960" /> So I found this pretty informative. After about 32 players will decline in overall performance on average and untill about 28 players are expected to improve on average. also it appears after 40 players are expected to decrease in overall skill.</p>
+</div>
+<div id="looking-at-value-and-wage" class="section level3">
+<h3>Looking at Value and Wage</h3>
+</div>
+</div>

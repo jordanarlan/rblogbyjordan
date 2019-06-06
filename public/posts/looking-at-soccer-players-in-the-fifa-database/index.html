@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author"
+    content="Jordan Arlan">
+<meta name="description"
+    content="Introduction From Wikipedia:
+FIFA 19 is a football simulation video game developed by EA Vancouver as part of Electronic Arts’ FIFA series. Announced on 6 June 2018 for its E3 2018 press conference, it was released on 28 September 2018 for PlayStation 3, PlayStation 4, Xbox 360, Xbox One, Nintendo Switch, and Microsoft Windows. It is the 26th installment in the FIFA series. As with FIFA 18, Cristiano Ronaldo appears as the cover athlete of the regular edition." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/looking-at-soccer-players-in-the-fifa-database/" />
+
+
+<title>
+    
+    Looking at soccer players in the FIFA database :: R blog by Jordan 
+    
+</title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+<link rel="stylesheet" href="/scss/main.min.099699ab246bf26f50616f7c9f00c79d46110459d1bd727b2d07d6fc09ece082.css">
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#252627">
+<link rel="shortcut icon" href="/favicon.ico">
+<meta name="theme-color" content="#252627">
+<meta itemprop="name" content="Looking at soccer players in the FIFA database">
+<meta itemprop="description" content="Introduction From Wikipedia:
+FIFA 19 is a football simulation video game developed by EA Vancouver as part of Electronic Arts’ FIFA series. Announced on 6 June 2018 for its E3 2018 press conference, it was released on 28 September 2018 for PlayStation 3, PlayStation 4, Xbox 360, Xbox One, Nintendo Switch, and Microsoft Windows. It is the 26th installment in the FIFA series. As with FIFA 18, Cristiano Ronaldo appears as the cover athlete of the regular edition.">
+
+
+<meta itemprop="datePublished" content="2019-05-16T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-05-16T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="717">
+
+
+
+<meta itemprop="keywords" content="Machine learning," />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/"/>
+
+<meta name="twitter:title" content="Looking at soccer players in the FIFA database"/>
+<meta name="twitter:description" content="Introduction From Wikipedia:
+FIFA 19 is a football simulation video game developed by EA Vancouver as part of Electronic Arts’ FIFA series. Announced on 6 June 2018 for its E3 2018 press conference, it was released on 28 September 2018 for PlayStation 3, PlayStation 4, Xbox 360, Xbox One, Nintendo Switch, and Microsoft Windows. It is the 26th installment in the FIFA series. As with FIFA 18, Cristiano Ronaldo appears as the cover athlete of the regular edition."/>
+
+
+
+<meta property="article:section" content="Machine learning" />
+
+<meta property="article:published_time" content="2019-05-16 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+    </head>
+
+    <body class="dark-theme">
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <span class="logo__mark">></span>
+            <span class="logo__text">Home.page$</span>
+            <span class="logo__cursor"></span>
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/about">About</a></li><li><a href="/posts">Posts</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+
+            <span class="theme-toggle"><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+  3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+  13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"/>
+</svg>
+</span>
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+    <main class="post">
+
+        <div class="post-info">
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>4 minutes
+
+            
+
+            </p>
+        </div>
+
+        <article>
+            <h1 class="post-title"><a href="/posts/looking-at-soccer-players-in-the-fifa-database/">Looking at soccer players in the FIFA database</a></h1>
+
+            
+
+            <div class="post-content">
+                
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>From Wikipedia:</p>
+<p><em>FIFA 19 is a football simulation video game developed by EA Vancouver as part of Electronic Arts’ FIFA series. Announced on 6 June 2018 for its E3 2018 press conference, it was released on 28 September 2018 for PlayStation 3, PlayStation 4, Xbox 360, Xbox One, Nintendo Switch, and Microsoft Windows. It is the 26th installment in the FIFA series. As with FIFA 18, Cristiano Ronaldo appears as the cover athlete of the regular edition.</em> <a href="https://en.wikipedia.org/wiki/FIFA_19" class="uri">https://en.wikipedia.org/wiki/FIFA_19</a></p>
+<p>The game features a number of different playing modes, however Career mode as a manager holds the most appeal for me.</p>
+<p>The following analysis will be tailored toward having the best chance at success in that mode for anyone interested.</p>
+<p><strong>Some things I want to analyse in this paper:</strong></p>
+<ul>
+<li>High level Exploratory Data Analysis</li>
+<li>Which features are highly correlated with a player’s overall rating by player position</li>
+<li>Analyse the differences between a player’s current rating and their potential rating</li>
+<li>Find out which teams have the highest potential</li>
+<li>Find out the youngest teams / oldest teams</li>
+<li>Use k-means clustering to try to find “bargains”; ie if there is someone with the same skills/potential, can they be found for a bargain?</li>
+</ul>
+<div id="clean-and-prepare-data-for-analysis" class="section level2">
+<h2>Clean and prepare data for analysis</h2>
+<div id="feature-enginering" class="section level3">
+<h3>Feature enginering</h3>
+<ol style="list-style-type: decimal">
+<li><p><strong>Player Valuation</strong> - The raw data has player valuations as a character string, with a designation at the end specifying whether the value is thousands or millions. Regex is used to create a numeric variable called ValueNumeric_pounds</p></li>
+<li><p><strong>Player Wage</strong> - See Point 1 above. Same transformation has occurred for player Wage</p></li>
+<li><p><strong>Player Positions</strong> - There are 28 different positions in FIFA2019. To make analysis less granular, I have decided to create four groupings; GK, DEF, MID and FWD.</p></li>
+<li><p><strong>Player Age</strong> - I have decided to group players into age buckets, in 5 year increments other than for players 20 years and younger, and players 35 years and over.</p></li>
+<li><p><strong>Height</strong> - I am going to parse the Height data to numerical data in Inches.</p></li>
+<li><p><strong>Weight</strong> - I am going to do the same thing with weight as height.</p></li>
+</ol>
+<pre class="r"><code>#Parse the value data from a string to numerical
+fifa_data &lt;- fifa_data %&gt;%
+  mutate(ValueMultiplier = ifelse(str_detect(Value, &quot;K&quot;), 1000, 
+                           ifelse(str_detect(Value, &quot;M&quot;), 1000000, 1))) %&gt;%
+  mutate(ValueNumeric_pounds = as.numeric(str_extract(Value, &quot;[[:digit:]]+\\.*[[:digit:]]*&quot;)) * ValueMultiplier) %&gt;%
+  mutate(Position = ifelse(is.na(Position), &quot;Unknown&quot;, Position))
+
+
+#Parse the wage data from a string to numerical
+fifa_data &lt;- fifa_data %&gt;%
+  mutate(WageMultiplier = ifelse(str_detect(Wage, &quot;K&quot;), 1000, 
+                          ifelse(str_detect(Wage, &quot;M&quot;), 1000000, 1))) %&gt;%
+  mutate(WageNumeric_pounds = as.numeric(str_extract(Wage, &quot;[[:digit:]]+\\.*[[:digit:]]*&quot;)) * WageMultiplier)
+
+#show unique positions
+positions &lt;- unique(fifa_data$Position)
+
+
+gk &lt;- &quot;GK&quot;
+defs &lt;- positions[str_detect(positions, &quot;B$&quot;)]
+mids &lt;- positions[str_detect(positions, &quot;M$&quot;)]
+f1 &lt;- positions[str_detect(positions, &quot;F$&quot;)]
+f2 &lt;- positions[str_detect(positions, &quot;S$&quot;)]
+f3 &lt;- positions[str_detect(positions, &quot;T$&quot;)]
+f4 &lt;- positions[str_detect(positions, &quot;W$&quot;)]
+fwds &lt;- c(f1, f2, f3, f4)
+
+#binning the positions in to 4 catagories
+fifa_data &lt;- fifa_data %&gt;%
+  mutate(PositionGroup = ifelse(Position %in% gk, &quot;GK&quot;, 
+                         ifelse(Position %in% defs,&quot;DEF&quot;,
+                         ifelse(Position %in% mids,&quot;MID&quot;,
+                         ifelse(Position %in% fwds, &quot;FWD&quot;, &quot;Unknown&quot;))
+  )))
+
+#binning the age data in to 5 catagories
+fifa_data &lt;- fifa_data %&gt;%
+  mutate(AgeGroup = ifelse(
+                      Age &lt;= 20,
+                      &quot;20 and under&quot;,
+                      ifelse(
+                        Age &gt; 20 &amp; Age &lt;= 25,
+                        &quot;21 to 25&quot;,
+                        ifelse(
+                          Age &gt; 25 &amp; Age &lt;= 30,
+                          &quot;25 to 30&quot;,
+                          ifelse(
+                            Age &gt; 30 &amp; Age &lt;= 35, 
+                            &quot;31 to 35&quot;, &quot;Over 35&quot;)
+      )
+    )
+  ))
+#going form X&#39;X&#39;&#39; format to just a numaric inches
+fifa_data$Height &lt;- sapply(strsplit(as.character(fifa_data$Height),&quot;&#39;|\&quot;&quot;),
+                          function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
+
+#simply extracting thenumbers out of the string
+fifa_data$Weight &lt;- extract_numeric(fifa_data$Weight)</code></pre>
+<pre><code>## extract_numeric() is deprecated: please use readr::parse_number() instead</code></pre>
+<pre class="r"><code>fifa_data$AgeGroup &lt;- factor(fifa_data$AgeGroup)</code></pre>
+</div>
+</div>
+<div id="eda-exploritory-data-analysis" class="section level2">
+<h2>EDA (Exploritory Data Analysis)</h2>
+<pre class="r"><code>fifa_cor &lt;- fifa_data %&gt;%
+  select_if(is.numeric) %&gt;%
+  cor(use = &quot;complete.obs&quot;)
+
+  
+  p.mat &lt;- fifa_data %&gt;%
+           select_if(is.numeric) %&gt;% 
+           cor.mtest()
+  
+  corrplot(
+  fifa_cor,
+  diag = FALSE,
+  order = &quot;AOE&quot;,
+  tl.pos = &quot;td&quot;,
+  tl.cex = 1,
+  method = &quot;color&quot;,
+  type = &quot;upper&quot;,
+  p.mat = p.mat$p, 
+  sig.level = 0.01
+  )</code></pre>
+<p><img src="/posts/2019-05-16-looking-at-soccer-players-in-the-fifa-database_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
+<p>A couple of key take aways from the corrlation plot are # Overall Ratings</p>
+<p>Player ratings are normally distributed in FIFA19, with a mean of 66.2387 and standard deviation of 6.9089</p>
+<pre class="r"><code>ovr.age.mean &lt;- fifa_data %&gt;% 
+                  group_by(AgeGroup) %&gt;% 
+                  summarize(&#39;Mean Overall&#39; = round(mean(Overall, na.rm = T),2))
+
+fifa_data %&gt;%
+  ggplot(aes(x= Overall)) +
+  geom_density(aes(color = AgeGroup)) </code></pre>
+<p><img src="/posts/2019-05-16-looking-at-soccer-players-in-the-fifa-database_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+<pre class="r"><code>print(ovr.age.mean)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   AgeGroup     `Mean Overall`
+##   &lt;fct&gt;                 &lt;dbl&gt;
+## 1 20 and under           59.7
+## 2 21 to 25               66.0
+## 3 25 to 30               69.1
+## 4 31 to 35               69.5
+## 5 Over 35                68.0</code></pre>
+</div>
+<div id="age-vs-overall-rating" class="section level2">
+<h2>Age vs Overall Rating</h2>
+</div>
+</div>
+
+            </div>
+        </article>
+
+        <hr />
+
+        <div class="post-info">
+                <p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="/tags/machine-learning">Machine learning</a></span>
+                </p>
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>717 Words</p>
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2019-05-15 19:00 -0500</p>
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Read other posts</span>
+                    <hr />
+                </div>
+
+                <div class="pagination__buttons">
+                    
+
+                    
+                        <span class="button next">
+                            <a href="/posts/video-game-sales-over-time/">
+                                <span class="button__text">Video game sales over time.</span>
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    
+                </div>
+            </div>
+        
+
+        
+    </main>
+
+            </div>
+
+            
+                <footer class="footer">
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>&copy; 2019</span>
+            
+            <span></span>
+            <span> <a href="/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
+        </div>
+    </div>
+    <div class="footer__inner">
+        <div class="footer__content">
+
+        </div>
+    </div>
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>Powered by <a href="http://gohugo.io">Hugo</a></span>
+            <span>Made with &#10084; by <a href="https://github.com/rhazdon">rhazdon</a></span>
+        </div>
+    </div>
+</footer>
+
+            
+        </div>
+
+        
+
+
+
+
+
+<script type="text/javascript" src="/js/bundle.min.cf7871ed49474a80ed457154d24e61f7881adbe0f9384951a74ac46b688a39a4dbfa68bc6d37baeb058186de354ead3487d4ee7f083ea4cba860c48600b694f3.js" integrity="sha512-z3hx7UlHSoDtRXFU0k5h94ga2&#43;D5OElRp0rEa2iKOaTb&#43;mi8bTe66wWBht41Tq00h9Tufwg&#43;pMuoYMSGALaU8w=="></script>
+
+
+
+    </body>
+</html>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Health on R blog by Jordan</title>
+    <link>/tags/health/</link>
+    <description>Recent content in Health on R blog by Jordan</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 24 May 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/health/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Logistic regression used to predict heart disease</title>
+      <link>/posts/logistic-regression-used-to-predict-heart-disease/</link>
+      <pubDate>Fri, 24 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/logistic-regression-used-to-predict-heart-disease/</guid>
+      <description>1. Heart disease and potential risk factors  Millions of people are getting some sort of heart disease every year and heart disease is the biggest killer of both men and women in the United States and around the world. Statistical analysis has identified many risk factors associated with heart disease such as age, blood pressure, total cholesterol, diabetes, hypertension, family history of heart disease, obesity, lack of physical exercise, etc.</description>
+    </item>
+    
+  </channel>
+</rss>

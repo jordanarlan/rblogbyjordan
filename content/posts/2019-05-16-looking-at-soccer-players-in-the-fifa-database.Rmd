@@ -1,0 +1,195 @@
+---
+title: Exploritory Data Analysis in the FIFA database
+author: Jordan Arlan
+date: '2019-05-16'
+slug: exploritory-data-analysis-in-the-fifa-database
+categories:
+  - Machine learning
+tags:
+  - Machine learning
+images: ~
+---
+
+## Introduction
+
+From Wikipedia: 
+
+*FIFA 19 is a football simulation video game developed by EA Vancouver as part of Electronic Arts' FIFA series. Announced on 6 June 2018 for its E3 2018 press conference, it was released on 28 September 2018 for PlayStation 3, PlayStation 4, Xbox 360, Xbox One, Nintendo Switch, and Microsoft Windows. It is the 26th installment in the FIFA series. As with FIFA 18, Cristiano Ronaldo appears as the cover athlete of the regular edition.* https://en.wikipedia.org/wiki/FIFA_19
+
+The game features a number of different playing modes, however Career mode as a manager holds the most appeal for me.
+
+The following analysis will be tailored toward having the best chance at success in that mode for anyone interested.
+
+
+**Some things I want to analyse in this paper:**
+
+- High level Exploratory Data Analysis
+- Which features are highly correlated with a player's overall rating by player position
+- Analyse the differences between a player's current rating and their potential rating
+- Find out which teams have the highest potential
+- Find out the youngest teams / oldest teams
+- Use k-means clustering to try to find "bargains"; ie if there is someone with the same skills/potential, can they be found for a bargain?
+
+```{r include=FALSE}
+# Load libraries
+library(tidyverse)
+library(scales)
+library(plotly)
+library('corrplot')
+#avoiding scientific notation
+options(scipen = 999)
+
+#Read in the dataset
+fifa_data <- read_csv("input/data.csv") %>% select(-X1)
+```
+
+## Clean and prepare data for analysis 
+
+### Feature enginering 
+
+
+1. **Player Valuation** - The raw data has player valuations as a character string, with a designation at the end specifying whether the value is thousands or millions. Regex is used to create a numeric variable called ValueNumeric_pounds
+
+2. **Player Wage** - See Point 1 above. Same transformation has occurred for player Wage
+
+3. **Player Positions** - There are 28 different positions in FIFA2019. To make analysis less granular, I have decided to create four groupings; GK, DEF, MID and FWD.
+
+4. **Player Age** - I have decided to group players into age buckets, in 5 year increments other than for players 20 years and younger, and players 35 years and over.
+
+5. **Height** - I am going to parse the Height data to numerical data in Inches. 
+
+6. **Weight** - I am going to do the same thing with weight as height.
+
+```{r}
+
+
+
+#Parse the value data from a string to numerical
+fifa_data <- fifa_data %>%
+  mutate(ValueMultiplier = ifelse(str_detect(Value, "K"), 1000, 
+                           ifelse(str_detect(Value, "M"), 1000000, 1))) %>%
+  mutate(ValueNumeric_pounds = as.numeric(str_extract(Value, "[[:digit:]]+\\.*[[:digit:]]*")) * ValueMultiplier) %>%
+  mutate(Position = ifelse(is.na(Position), "Unknown", Position))
+
+
+#Parse the wage data from a string to numerical
+fifa_data <- fifa_data %>%
+  mutate(WageMultiplier = ifelse(str_detect(Wage, "K"), 1000, 
+                          ifelse(str_detect(Wage, "M"), 1000000, 1))) %>%
+  mutate(WageNumeric_pounds = as.numeric(str_extract(Wage, "[[:digit:]]+\\.*[[:digit:]]*")) * WageMultiplier)
+
+#show unique positions
+positions <- unique(fifa_data$Position)
+
+
+gk <- "GK"
+defs <- positions[str_detect(positions, "B$")]
+mids <- positions[str_detect(positions, "M$")]
+f1 <- positions[str_detect(positions, "F$")]
+f2 <- positions[str_detect(positions, "S$")]
+f3 <- positions[str_detect(positions, "T$")]
+f4 <- positions[str_detect(positions, "W$")]
+fwds <- c(f1, f2, f3, f4)
+
+#binning the positions in to 4 catagories
+fifa_data <- fifa_data %>%
+  mutate(PositionGroup = ifelse(Position %in% gk, "GK", 
+                         ifelse(Position %in% defs,"DEF",
+                         ifelse(Position %in% mids,"MID",
+                         ifelse(Position %in% fwds, "FWD", "Unknown"))
+  )))
+
+#binning the age data in to 5 catagories
+fifa_data <- fifa_data %>%
+  mutate(AgeGroup = ifelse(
+                      Age <= 20,
+                      "20 and under",
+                      ifelse(
+                        Age > 20 & Age <= 25,
+                        "21 to 25",
+                        ifelse(
+                          Age > 25 & Age <= 30,
+                          "25 to 30",
+                          ifelse(
+                            Age > 30 & Age <= 35, 
+                            "31 to 35", "Over 35")
+      )
+    )
+  ))
+#going form X'X'' format to just a numaric inches
+fifa_data$Height <- sapply(strsplit(as.character(fifa_data$Height),"'|\""),
+                          function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
+
+#simply extracting thenumbers out of the string
+fifa_data$Weight <- extract_numeric(fifa_data$Weight)
+
+fifa_data$AgeGroup <- factor(fifa_data$AgeGroup)
+```
+
+
+
+
+
+
+## EDA (Exploritory Data Analysis)
+
+```{r fig.height=10, fig.width=10}
+fifa_cor <- fifa_data %>%
+  select_if(is.numeric) %>%
+  cor(use = "complete.obs")
+
+  
+  p.mat <- fifa_data %>%
+           select_if(is.numeric) %>% 
+           cor.mtest()
+  
+  corrplot(
+  fifa_cor,
+  diag = FALSE,
+  order = "AOE",
+  tl.pos = "td",
+  tl.cex = 1,
+  method = "color",
+  type = "upper",
+  p.mat = p.mat$p, 
+  sig.level = 0.01
+  )
+
+```
+
+A couple of key take aways from the corrlation plot are that Potential, Overall, Reactions, and Composure are highly corralted. Also apparntly the better goalie you are the worse you tend to be at dribbling. Im also looking to see that the relationships folow my intuition so far i havent noticed any thing out of the ordinary
+
+
+### Overall Ratings
+
+Player ratings are normally distributed in FIFA19, with a mean of `r round(mean(fifa_data$Overall, na.rm = T),4)` and standard deviation of `r round(sd(fifa_data$Overall, na.rm = T),4)`
+
+```{r, message=FALSE, warning=FALSE, fig.width=10, fig.height=5}
+
+ovr.age.mean <- fifa_data %>% 
+                  group_by(AgeGroup) %>% 
+                  summarize('Mean Overall' = round(mean(Overall, na.rm = T),2))
+
+fifa_data %>%
+  ggplot(aes(x= Overall)) +
+  geom_density(aes(color = AgeGroup)) 
+    
+print(ovr.age.mean)
+```
+
+
+
+```{r, message=FALSE, warning=FALSE, fig.width=10, fig.height=5}
+ggOver <- ggplot(fifa_data, aes(y = Overall)) 
+
+ggOver + geom_smooth(aes(x = Age)) + geom_smooth(aes(x = Age, y = Potential, color = "red"))
+
+```
+So I found this pretty informative. After about 32 players will decline in overall performance on average and untill about 28 players are expected to improve on average. also it appears after 40 players are expected to decrease in overall skill.
+
+### Looking at Value and Wage
+
+```{r}
+
+```
+
