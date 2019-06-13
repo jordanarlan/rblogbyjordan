@@ -16,7 +16,7 @@ library(tidyverse)
 I am starting off by loading the data from a Git repo. I did it this way so that it was possible to follow along if you would like. you can copy and paste the exact code below.
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
-data <- read.csv("https://github.com/jordanarlan/rblogbyjordan/raw/master/Video_Games_Sales_as_at_22_Dec_2016.csv")
+data <- read.csv("~/Desktop/RBlogByJordan/content/posts/input/Video_Games_Sales_as_at_22_Dec_2016.csv")
 ```
 
 # 2. Exploritory analysis. 
@@ -25,7 +25,7 @@ data <- read.csv("https://github.com/jordanarlan/rblogbyjordan/raw/master/Video_
 str(data)
 ```
 
-I would like to know how the intrest in genres has changed over time.
+I would like to know how the intrest in genres has changed over time. TEST
 
 ```{r}
 genre_year <- data %>% 

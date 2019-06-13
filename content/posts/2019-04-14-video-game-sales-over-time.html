@@ -15,7 +15,7 @@ images: ~
 <div id="loading-the-data" class="section level1">
 <h1>1. Loading the data</h1>
 <p>I am starting off by loading the data from a Git repo. I did it this way so that it was possible to follow along if you would like. you can copy and paste the exact code below.</p>
-<pre class="r"><code>data &lt;- read.csv(&quot;https://github.com/jordanarlan/rblogbyjordan/raw/master/Video_Games_Sales_as_at_22_Dec_2016.csv&quot;)</code></pre>
+<pre class="r"><code>data &lt;- read.csv(&quot;~/Desktop/RBlogByJordan/content/posts/input/Video_Games_Sales_as_at_22_Dec_2016.csv&quot;)</code></pre>
 </div>
 <div id="exploritory-analysis." class="section level1">
 <h1>2. Exploritory analysis.</h1>
@@ -37,7 +37,7 @@ images: ~
 ##  $ User_Count     : int  322 NA 709 192 NA NA 431 129 594 NA ...
 ##  $ Developer      : Factor w/ 1697 levels &quot;&quot;,&quot;10tacle Studios&quot;,..: 1035 1 1035 1035 1 1 1035 1035 1035 1 ...
 ##  $ Rating         : Factor w/ 9 levels &quot;&quot;,&quot;AO&quot;,&quot;E&quot;,&quot;E10+&quot;,..: 3 1 3 3 1 1 3 3 3 1 ...</code></pre>
-<p>I would like to know how the intrest in genres has changed over time.</p>
+<p>I would like to know how the intrest in genres has changed over time. TEST</p>
 <pre class="r"><code>genre_year &lt;- data %&gt;% 
   filter(Year_of_Release != c(2017, 2020, NA))%&gt;%
   group_by(Genre, Year_of_Release) %&gt;%

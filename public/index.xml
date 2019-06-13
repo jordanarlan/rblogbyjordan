@@ -37,7 +37,7 @@ FIFA 19 is a football simulation video game developed by EA Vancouver as part of
       
       <guid>/posts/video-game-sales-over-time/</guid>
       <description>library(tidyverse) 1. Loading the data I am starting off by loading the data from a Git repo. I did it this way so that it was possible to follow along if you would like. you can copy and paste the exact code below.
-data &amp;lt;- read.csv(&amp;quot;https://github.com/jordanarlan/rblogbyjordan/raw/master/Video_Games_Sales_as_at_22_Dec_2016.csv&amp;quot;)  2. Exploritory analysis. str(data) ## &amp;#39;data.frame&amp;#39;: 16719 obs. of 16 variables: ## $ Name : Factor w/ 11563 levels &amp;quot;&amp;quot;,&amp;quot; Beyblade Burst&amp;quot;,..: 11059 9406 5572 11061 7411 9771 6693 11057 6696 2620 .</description>
+data &amp;lt;- read.csv(&amp;quot;~/Desktop/RBlogByJordan/content/posts/input/Video_Games_Sales_as_at_22_Dec_2016.csv&amp;quot;)  2. Exploritory analysis. str(data) ## &amp;#39;data.frame&amp;#39;: 16719 obs. of 16 variables: ## $ Name : Factor w/ 11563 levels &amp;quot;&amp;quot;,&amp;quot; Beyblade Burst&amp;quot;,..: 11059 9406 5572 11061 7411 9771 6693 11057 6696 2620 .</description>
     </item>
     
     <item>
