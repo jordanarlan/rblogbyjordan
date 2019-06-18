@@ -10,7 +10,6 @@ images: ~
 ---
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 library(tidyverse)
-
 ```
 # 1. Loading the data
 I am starting off by loading the data from a Git repo. I did it this way so that it was possible to follow along if you would like. you can copy and paste the exact code below.
