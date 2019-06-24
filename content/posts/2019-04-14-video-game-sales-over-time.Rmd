@@ -24,7 +24,7 @@ data <- read.csv("~/Desktop/RBlogByJordan/content/posts/input/Video_Games_Sales_
 str(data)
 ```
 
-I would like to know how the intrest in genres has changed over time. TEST
+I would like to know how the intrest in genres has changed over time. 
 
 ```{r}
 genre_year <- data %>% 

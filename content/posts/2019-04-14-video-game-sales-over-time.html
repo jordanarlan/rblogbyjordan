@@ -37,7 +37,7 @@ images: ~
 ##  $ User_Count     : int  322 NA 709 192 NA NA 431 129 594 NA ...
 ##  $ Developer      : Factor w/ 1697 levels &quot;&quot;,&quot;10tacle Studios&quot;,..: 1035 1 1035 1035 1 1 1035 1035 1035 1 ...
 ##  $ Rating         : Factor w/ 9 levels &quot;&quot;,&quot;AO&quot;,&quot;E&quot;,&quot;E10+&quot;,..: 3 1 3 3 1 1 3 3 3 1 ...</code></pre>
-<p>I would like to know how the intrest in genres has changed over time. TEST</p>
+<p>I would like to know how the intrest in genres has changed over time.</p>
 <pre class="r"><code>genre_year &lt;- data %&gt;% 
   filter(Year_of_Release != c(2017, 2020, NA))%&gt;%
   group_by(Genre, Year_of_Release) %&gt;%
