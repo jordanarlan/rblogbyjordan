@@ -1,0 +1,115 @@
+---
+title: 'A Coding Challenge: Alternating Case'
+author: Jordan Arlan
+date: '2019-06-24'
+slug: a-coding-challenge-alternating-case
+categories: []
+tags: []
+toc: no
+images: ~
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(tidyverse)
+```
+
+```{r message=FALSE, warning=FALSE}
+
+# Complete the "toAlternatingCase" function below.  It should accept a
+# character argument and return a character value.  The returned
+# character value should be created by performing a transformation on
+# the argument value in which:
+
+# (1) Each odd-positioned alphabetical character is capitalized
+# (2) Each even-positioned alphabetical character is made lowercase
+# (3) Non-alphabetical characters are not changed in any way
+#     [NOTE: the toupper() and tolower() methods which accept character
+#      vectors do not modify non-alphabetical characters]
+
+```
+
+The goal is to create a robust function that passes all three rules set by the challenge. 
+
+```{r}
+
+toAlternatingCase <- function(str) {
+  
+  # First I am going to make all the letters lower case and vectorize the word. 
+  # I make the letters lower case that way I know what I’m dealing with 
+  # for the rest of the function.
+  chr_vec <- tolower(str) %>%
+    strsplit("") %>% unlist(use.names=FALSE)
+  
+  # Here I am saving the length of the string to use later
+  l <- nchar(str)
+  
+  # In order to utilize the map_at function later on I will need a 
+  # logical vector where TRUE corresponds to a desired upper case letter
+  log_vec <- 1:l
+  for (i in log_vec) {
+    if ((i %% 2) == 0) {
+      log_vec[i] <- FALSE
+    } else {
+      log_vec[i] <- TRUE
+    }
+  }
+  # Now to actually manipulate the string to have an uppercase
+  # letter at all odd positions. This will only be done if the 
+  # length of the word is greater than one. 
+  if(l > 1){
+    chr_vec <- chr_vec %>% 
+      map_if(as.logical(log_vec) == T, toupper)%>% unlist(use.names=FALSE)
+  } else {
+    chr_vec <- toupper(str)
+  }
+  #Lastly I combined the character vector back in to one word.
+  chr_vec %>% paste0(collapse = "")
+  
+}
+```
+To test out the function I will run it a few times with some edge cases. 
+
+```{r}
+toAlternatingCase("Hello World")
+toAlternatingCase("HELLO WORLD")
+toAlternatingCase(" ")
+toAlternatingCase("12345678")
+
+```
+## Unit Testing 
+
+When it comes to building something like this, it is extremely helpful to always check your code as you go. I will show some examples of how I tested my code as figured the challenge out. 
+
+
+```{r}
+toAlternatingCase <- function(str) {
+  chr_vec <- tolower(str) %>%
+    strsplit("") %>% unlist(use.names=FALSE)
+  print(c("this should be str seperated by letter in a vec", chr_vec))
+  
+  l <- nchar(str)
+  print(c("this should be length of str", l))
+  
+  log_vec <- 1:l
+  
+  for (i in log_vec) {
+    if ((i %% 2) == 0) {
+      log_vec[i] <- FALSE
+    } else {
+      log_vec[i] <- TRUE
+    }
+  }
+  print(c("this should be alternating T/F the length of str", log_vec))
+}
+```
+Now to see what a test run looks like
+```{r}
+toAlternatingCase("Hello World")
+```
+

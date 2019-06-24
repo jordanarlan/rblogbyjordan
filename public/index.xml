@@ -6,10 +6,19 @@
     <description>Recent content on R blog by Jordan</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 24 May 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 24 Jun 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>A Coding Challenge: Alternating Case</title>
+      <link>/posts/a-coding-challenge-alternating-case/</link>
+      <pubDate>Mon, 24 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/a-coding-challenge-alternating-case/</guid>
+      <description># Complete the &amp;quot;toAlternatingCase&amp;quot; function below. It should accept a # character argument and return a character value. The returned # character value should be created by performing a transformation on # the argument value in which: # (1) Each odd-positioned alphabetical character is capitalized # (2) Each even-positioned alphabetical character is made lowercase # (3) Non-alphabetical characters are not changed in any way # [NOTE: the toupper() and tolower() methods which accept character # vectors do not modify non-alphabetical characters] The goal is to create a robust function that passes all three rules set by the challenge.</description>
+    </item>
     
     <item>
       <title>Logistic regression used to predict heart disease</title>
