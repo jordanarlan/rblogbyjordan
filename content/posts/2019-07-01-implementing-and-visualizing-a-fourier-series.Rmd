@@ -1,0 +1,29 @@
+---
+title: 'Implementing and visualizing a Fourier series '
+author: Jordan Arlan
+date: '2019-07-01'
+slug: implementing-and-visualizing-a-fourier-series
+categories:
+  - Math
+tags:
+  - Math
+toc: no
+images: ~
+---
+
+```{r}
+library(tidyverse)
+
+```
+
+```{r}
+n <- 2
+  radius <- 10 *(4/n*pi)
+wave <- tibble(t = seq(0,100,.1), x = radius*cos(t), y = radius*sin(t))
+wave %>% 
+  ggplot(aes(x,y)) +
+    geom_point(size = .1)
+  
+```
+
+

@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/posts/implementing-and-visualizing-a-fourier-series/</loc>
+    <lastmod>2019-07-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/posts/a-coding-challenge-alternating-case/</loc>
     <lastmod>2019-06-24T00:00:00+00:00</lastmod>
   </url>
@@ -61,6 +66,18 @@
   </url>
   
   <url>
+    <loc>/tags/math/</loc>
+    <lastmod>2019-07-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/math/</loc>
+    <lastmod>2019-07-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/tags/physics/</loc>
     <lastmod>2019-04-06T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -74,13 +91,13 @@
   
   <url>
     <loc>/posts/</loc>
-    <lastmod>2019-06-24T00:00:00+00:00</lastmod>
+    <lastmod>2019-07-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2019-06-24T00:00:00+00:00</lastmod>
+    <lastmod>2019-07-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
